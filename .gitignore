@@ -1,0 +1,10 @@
+/vendor
+/node_modules
+/build
+/coverage
+/.phpunit.cache
+composer.lock
+.phpunit.result.cache
+.env
+.claude/
+/.playwright-mcp

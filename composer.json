@@ -1,0 +1,55 @@
+{
+    "name": "phoenix1331/filament-headroom",
+    "description": "A Filament dashboard for AI token usage, cost and context limits, powered by Headroom.",
+    "keywords": [
+        "laravel",
+        "filament",
+        "filament-plugin",
+        "ai",
+        "llm",
+        "headroom",
+        "tokens",
+        "token-usage",
+        "cost-tracking",
+        "context-window",
+        "dashboard",
+        "laravel-ai-sdk"
+    ],
+    "homepage": "https://phoenix1331.github.io/filament-headroom",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Darren Williams",
+            "homepage": "https://github.com/phoenix1331"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/phoenix1331/filament-headroom/issues",
+        "source": "https://github.com/phoenix1331/filament-headroom"
+    },
+    "require": {
+        "php": "^8.3",
+        "filament/filament": "^5.0",
+        "illuminate/contracts": "^12.0|^13.0",
+        "illuminate/support": "^12.0|^13.0",
+        "phoenix1331/laravel-ai-headroom": "^0.1",
+        "phoenix1331/laravel-ai-headroom-ledger": "^0.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phoenix1331\\FilamentHeadroom\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Phoenix1331\\FilamentHeadroom\\FilamentHeadroomServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
