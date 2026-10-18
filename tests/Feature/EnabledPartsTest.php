@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Filament\Facades\Filament;
 use Filament\Panel;
 use Phoenix1331\FilamentHeadroom\HeadroomPlugin;
+use Phoenix1331\FilamentHeadroom\Pages\RequestDetail;
 use Phoenix1331\FilamentHeadroom\Tests\Fixtures\AuthorisedPage;
 use Phoenix1331\FilamentHeadroom\Tests\Fixtures\AuthorisedWidget;
 use Phoenix1331\FilamentHeadroom\Tests\Fixtures\NavigablePage;
@@ -19,7 +20,7 @@ describe('pages', function (): void {
         $plugin = HeadroomPlugin::make();
 
         expect($plugin->getPages())->toBe(HeadroomPlugin::PAGES)
-            ->and(panelWith($plugin)->getPages())->toBe(HeadroomPlugin::PAGES);
+            ->and(panelWith($plugin)->getPages())->toBe([...HeadroomPlugin::PAGES, RequestDetail::class]);
     });
 
     it('registers only the enabled pages', function (): void {

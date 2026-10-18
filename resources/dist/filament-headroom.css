@@ -1,0 +1,86 @@
+/*
+ * Styles for Headroom's own markup. Filament only ships the utility classes
+ * it uses itself, so plugin views use these fi-headroom-* classes, built on
+ * Filament's colour variables so they follow the panel theme and dark mode.
+ */
+
+.fi-headroom-cost {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.5rem;
+    row-gap: 0.25rem;
+}
+
+.fi-headroom-muted {
+    color: var(--gray-500);
+}
+
+.dark .fi-headroom-muted {
+    color: var(--gray-400);
+}
+
+.fi-headroom-run-steps {
+    overflow-x: auto;
+}
+
+.fi-headroom-run-steps table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.fi-headroom-run-steps th {
+    padding: 0.5rem 0.75rem 0.5rem 0;
+    text-align: start;
+    font-weight: 500;
+    color: var(--gray-500);
+    white-space: nowrap;
+}
+
+.dark .fi-headroom-run-steps th {
+    color: var(--gray-400);
+}
+
+.fi-headroom-run-steps td {
+    padding: 0.625rem 0.75rem 0.625rem 0;
+    border-top: 1px solid var(--gray-200);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.dark .fi-headroom-run-steps td {
+    border-top-color: color-mix(in oklab, white 10%, transparent);
+}
+
+.fi-headroom-run-steps .fi-headroom-tabular {
+    font-variant-numeric: tabular-nums;
+}
+
+.fi-headroom-run-steps .fi-headroom-number {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+}
+
+.fi-headroom-run-steps tr[aria-current='true'] td {
+    background: var(--gray-50);
+    font-weight: 500;
+}
+
+.dark .fi-headroom-run-steps tr[aria-current='true'] td {
+    background: color-mix(in oklab, white 5%, transparent);
+}
+
+.fi-headroom-run-steps a {
+    color: var(--primary-600);
+    text-decoration: none;
+}
+
+.fi-headroom-run-steps a:hover {
+    text-decoration: underline;
+}
+
+.dark .fi-headroom-run-steps a {
+    color: var(--primary-400);
+}

@@ -172,6 +172,7 @@ trait GroupsByRun
             $row['agent'] = $summary?->agent;
             $row['started_at'] = $summary?->startedAt;
             $row['ended_at'] = $summary?->endedAt;
+            $row['detail_id'] = $summary?->steps->first()?->requestId;
             $result[$id] = $row;
         }
 

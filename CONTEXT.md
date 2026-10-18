@@ -39,7 +39,10 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Support/CalibrationStatus.php` | Headroom `Calibrator::correctionFor()` / `store()->get()` plus `ai-headroom.calibration` config: off, none, learning (n of min samples), active (factor, margin) |
 | `src/Pages/Requests.php` | `headroom/requests`: plain `Page` + `HasTable` with an `EmbeddedTable`; array records from `paginate()` wrapped in a `LengthAwarePaginator`; `SORTS` maps sortable columns to `EntrySort`. `SelectFilter`s carry state only (custom-data tables ignore their queries); `query($filters)` maps it to `forAgent()`, `forProvider()`, `forModel()`, `withOutcome()`, `forCountMethod()`, `forTag()`. Tag filters (`tag_<key>`) come from `headroom-ledger.tags.allowed`; option lists from the last 90 days so they do not shift with the range |
 | `src/Pages/Concerns/GroupsByRun.php` | Requests run view (`?group=run`, Livewire `#[Url]` so each mode builds its own table): `byRun()` spend/tokens/context totals under the same filters, paged in PHP; default order by most recent activity from time-sorted `paginate()` batches (`RUN_SCAN_BATCH`), never from invocation ID format; agent/start/end from the filter-scoped `run()` for current-page rows only |
-| `src/Pages/` | Still to come: Requests detail view, GDPR action |
+| `src/Pages/RequestDetail.php` | `headroom/requests/{requestId}` (`getRoutePath()` override keeps the route name `headroom.requests.view`); only `$requestId` is Livewire state, the entry and run load once per request via `HeadroomPlugin::ledger()->find()` / `run()` (404 when out of scope); added by `register()` whenever a Requests page (or subclass) is enabled, not listed in `PAGES` |
+| `resources/views/run-steps.blade.php` | Run steps table on the detail page: estimated input and growth from the previous step, current step `aria-current` |
+| `resources/dist/filament-headroom.css` | `fi-headroom-*` classes on Filament colour variables, registered with `FilamentAsset` (`filament:assets` publishes it) |
+| `src/Pages/` | Still to come: GDPR action on Requests |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
 | `resources/views/` | Blade views where Filament components are not enough |
@@ -64,6 +67,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | Chart options are `RawJs` with every literal from `Js::from()` | Filament renders chart options inside an HTML attribute; a `"` from `json_encode()` ends it and prints the JS as text. A test asserts the options contain no double quote |
 | Token charts show reported tokens only | `TokenTotals` input/output cover only requests that reported usage, and the ledger cannot split estimate-only input per group; mixing in `estimatedInput` would double count |
 | Tests use the array cache (`phpunit.xml` `CACHE_STORE=array`) | Headroom keeps calibration in the cache; Testbench's default database cache has no table in the test database |
+| Plugin markup uses its own `fi-headroom-*` CSS, never Tailwind utilities | Filament's compiled CSS only contains the utilities Filament itself uses; a test keeps the stylesheet to `fi-headroom-` selectors |
 | Tables over ledger data use array records | Filament tables take `->records(fn () => [...])` with a `key` per row; `assertCountTableRecords()` needs an Eloquent query, so tests assert visible records instead |
 | Per-point charts bucket the range (`Range::bucketDays()`: 1 / 3 / 7) | Smooths noisy daily accuracy; a test caps the accuracy chart at 3 queries for any range |
 | Run view pages runs in PHP | The ledger has no run pagination (proposed L3); it costs one grouped query per total plus one `run()` per visible row |

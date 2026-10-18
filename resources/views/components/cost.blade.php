@@ -7,8 +7,8 @@
     $label = $cost->basis->getLabel();
 @endphp
 
-<span {{ $attributes->class(['fi-headroom-cost inline-flex flex-wrap items-center gap-x-2 gap-y-1']) }}>
-    <span @class(['fi-headroom-cost-amount', 'text-gray-500 dark:text-gray-400' => $cost->isEmpty()])>{{ $cost->amount() }}</span>
+<span {{ $attributes->class(['fi-headroom-cost']) }}>
+    <span @class(['fi-headroom-cost-amount', 'fi-headroom-muted' => $cost->isEmpty()])>{{ $cost->amount() }}</span>
 
     @if ($label !== null && ! $cost->isEmpty())
         <x-filament::badge

@@ -96,6 +96,7 @@ class Requests extends Page implements HasTable
             ->filtersFormColumns(4)
             ->persistFiltersInSession()
             ->defaultSort($this->isGroupedByRun() ? null : 'counted_at', 'desc')
+            ->recordUrl(fn (array $record): ?string => self::detailUrl($record))
             ->paginated([10, 25, 50, 100])
             ->defaultPaginationPageOption(25)
             ->emptyStateHeading($this->isGroupedByRun() ? __('filament-headroom::pages.requests.runs.empty') : __('filament-headroom::pages.requests.empty'))
@@ -343,6 +344,18 @@ class Requests extends Page implements HasTable
             'invocation_id' => $entry->invocationId,
             'tags' => $entry->tags,
         ];
+    }
+
+    /**
+     * The request's detail page; a run row opens its first step.
+     *
+     * @param  array<mixed>  $record
+     */
+    private static function detailUrl(array $record): ?string
+    {
+        $id = $record['detail_id'] ?? $record['key'] ?? null;
+
+        return is_string($id) ? RequestDetail::getUrl(['requestId' => $id]) : null;
     }
 
     /**

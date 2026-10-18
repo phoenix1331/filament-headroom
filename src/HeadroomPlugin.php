@@ -21,6 +21,7 @@ use Phoenix1331\AiHeadroomLedger\Query\LedgerQuery;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
 use Phoenix1331\FilamentHeadroom\Pages\Models;
 use Phoenix1331\FilamentHeadroom\Pages\Overview;
+use Phoenix1331\FilamentHeadroom\Pages\RequestDetail;
 use Phoenix1331\FilamentHeadroom\Pages\Requests;
 use Phoenix1331\FilamentHeadroom\Widgets\BlockedWarnedFailed;
 use Phoenix1331\FilamentHeadroom\Widgets\ContextHeadroom;
@@ -336,9 +337,23 @@ class HeadroomPlugin implements Plugin
         return in_array($widget, $this->getWidgets(), true);
     }
 
+    /**
+     * The enabled pages plus the request detail page whenever a Requests page
+     * (or a subclass) is enabled, so disabling Requests disables both.
+     */
     public function register(Panel $panel): void
     {
-        $panel->pages($this->getPages());
+        $pages = $this->getPages();
+
+        foreach ($pages as $page) {
+            if (is_a($page, Requests::class, true)) {
+                $pages[] = RequestDetail::class;
+
+                break;
+            }
+        }
+
+        $panel->pages($pages);
     }
 
     public function boot(Panel $panel): void
