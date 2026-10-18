@@ -6,7 +6,8 @@ A Filament dashboard for AI token usage, cost and context limits, powered by [He
 
 [![Tests](https://github.com/phoenix1331/filament-headroom/actions/workflows/tests.yml/badge.svg)](https://github.com/phoenix1331/filament-headroom/actions/workflows/tests.yml)
 [![Static analysis](https://github.com/phoenix1331/filament-headroom/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/phoenix1331/filament-headroom/actions/workflows/static-analysis.yml)
-[![Licence](https://img.shields.io/github/license/phoenix1331/filament-headroom)](LICENSE)
+[![Packagist](https://img.shields.io/packagist/v/phoenix1331/filament-headroom.svg)](https://packagist.org/packages/phoenix1331/filament-headroom)
+[![Licence](https://img.shields.io/github/license/phoenix1331/filament-headroom.svg)](LICENSE)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-dark.png">
