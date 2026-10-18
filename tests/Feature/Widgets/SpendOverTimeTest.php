@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Carbon\CarbonImmutable;
-use Livewire\Features\SupportTesting\Testable;
 use Phoenix1331\AiHeadroomLedger\Database\Factories\LedgerEntryFactory;
 use Phoenix1331\FilamentHeadroom\HeadroomPlugin;
 use Phoenix1331\FilamentHeadroom\Support\ChartPalette;
@@ -25,24 +24,6 @@ function spendOn(string $model, int $microUnits, int $daysAgo = 0, string $curre
         ->inCurrency($currency)
         ->at(CarbonImmutable::now()->setTime(12, 0)->subDays($daysAgo))
         ->create(['actual_cost' => $microUnits]);
-}
-
-/**
- * @return array{labels: list<string>, datasets: list<array<string, mixed>>}
- */
-function chartData(Testable $component): array
-{
-    $widget = $component->instance();
-
-    return (fn (): array => $this->getCachedData())->call($widget);
-}
-
-/**
- * @return array<string, array<string, mixed>>
- */
-function seriesByLabel(Testable $component): array
-{
-    return collect(chartData($component)['datasets'])->keyBy('label')->all();
 }
 
 it('is one of the built-in widgets', function (): void {

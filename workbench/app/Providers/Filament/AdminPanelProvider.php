@@ -22,6 +22,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Phoenix1331\FilamentHeadroom\HeadroomPlugin;
 use Phoenix1331\FilamentHeadroom\Widgets\SpendOverTime;
 use Phoenix1331\FilamentHeadroom\Widgets\StatsOverview;
+use Phoenix1331\FilamentHeadroom\Widgets\TokensByAgent;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -34,7 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->colors(['primary' => Color::Indigo])
             ->pages([Dashboard::class])
-            ->widgets([AccountWidget::class, StatsOverview::class, SpendOverTime::class])
+            ->widgets([AccountWidget::class, StatsOverview::class, SpendOverTime::class, TokensByAgent::class])
             ->plugin(HeadroomPlugin::make())
             ->middleware([
                 EncryptCookies::class,

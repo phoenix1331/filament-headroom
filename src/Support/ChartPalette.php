@@ -24,9 +24,26 @@ final class ChartPalette
 
     public const string OTHER_DARK = '#71717a';
 
+    /** Filament's widget surfaces, used for the gap between stacked segments. */
+    public const string SURFACE_LIGHT = '#ffffff';
+
+    public const string SURFACE_DARK = '#18181b';
+
     public static function slots(): int
     {
         return count(self::LIGHT);
+    }
+
+    /**
+     * A Chart.js scriptable colour for the chart surface in the current mode.
+     */
+    public static function surface(): string
+    {
+        return sprintf(
+            '() => document.documentElement.classList.contains(\'dark\') ? %s : %s',
+            Js::from(self::SURFACE_DARK),
+            Js::from(self::SURFACE_LIGHT),
+        );
     }
 
     /**

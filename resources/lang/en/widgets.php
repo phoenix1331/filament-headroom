@@ -30,4 +30,13 @@ return [
         'includes_estimates' => 'Includes estimates for requests that never reported usage.',
         'other_currencies' => 'Showing :currency only; spend in :others is not converted or included.',
     ],
+
+    'tokens_by_agent' => [
+        'heading' => 'Tokens by agent',
+        'input' => 'Input',
+        'output' => 'Output',
+        'other' => 'Other agents',
+        'no_agent' => 'No agent',
+        'unreported' => '{1} Reported usage only: :count request never reported usage and is not included.|[2,*] Reported usage only: :count requests never reported usage and are not included.',
+    ],
 ];

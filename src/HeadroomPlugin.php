@@ -19,6 +19,7 @@ use LogicException;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
 use Phoenix1331\FilamentHeadroom\Widgets\SpendOverTime;
 use Phoenix1331\FilamentHeadroom\Widgets\StatsOverview;
+use Phoenix1331\FilamentHeadroom\Widgets\TokensByAgent;
 use UnitEnum;
 
 class HeadroomPlugin implements Plugin
@@ -42,6 +43,7 @@ class HeadroomPlugin implements Plugin
     public const array WIDGETS = [
         StatsOverview::class,
         SpendOverTime::class,
+        TokensByAgent::class,
     ];
 
     protected bool|Closure|null $authorizeUsing = null;
