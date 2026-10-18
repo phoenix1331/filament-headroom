@@ -207,15 +207,20 @@ class Requests extends Page implements HasTable
     }
 
     /**
-     * Context tag keys the ledger records, from its allowlist.
+     * Context tag keys the ledger records, from its allowlist, less the
+     * tenant tag when the panel is scoped to tenants.
      *
      * @return list<string>
      */
     protected static function tagKeys(): array
     {
         $keys = config('headroom-ledger.tags.allowed', []);
+        $keys = is_array($keys) ? array_values(array_filter($keys, is_string(...))) : [];
 
-        return is_array($keys) ? array_values(array_filter($keys, is_string(...))) : [];
+        // The tenant tag has one value under tenant scoping, so it is no filter.
+        $tenantTag = HeadroomPlugin::current()?->getTenantTag();
+
+        return array_values(array_filter($keys, fn (string $key): bool => $key !== $tenantTag));
     }
 
     protected static function tagFilter(string $key): string

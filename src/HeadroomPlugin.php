@@ -14,6 +14,7 @@ use Filament\Support\Concerns\EvaluatesClosures;
 use Filament\Widgets\Widget;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use LogicException;
 use Phoenix1331\AiHeadroomLedger\Facades\Ledger;
@@ -37,6 +38,14 @@ class HeadroomPlugin implements Plugin
     use EvaluatesClosures;
 
     public const ID = 'headroom';
+
+    /**
+     * Value used when tenant scoping is on but there is no current tenant:
+     * no ledger tag holds it, so the query matches nothing (fails closed).
+     * U+FFFF is a Unicode noncharacter, never in real tag values, yet valid
+     * UTF-8 on every database (PostgreSQL rejects a NUL byte outright).
+     */
+    public const string NO_TENANT = "\u{FFFF}headroom-no-tenant";
 
     /**
      * Pages registered when pages() is not called.
@@ -81,6 +90,10 @@ class HeadroomPlugin implements Plugin
 
     protected ?Closure $tagLabelUsing = null;
 
+    protected ?string $tenantTag = null;
+
+    protected ?Closure $tenantValueUsing = null;
+
     /** @var list<class-string<Page>>|null */
     protected ?array $pages = null;
 
@@ -122,11 +135,63 @@ class HeadroomPlugin implements Plugin
 
     /**
      * The starting point for every ledger read on Headroom pages and widgets,
-     * so scoping added here applies everywhere.
+     * so tenant scoping applies to every page, widget, filter option, run and
+     * detail view alike.
      */
     public static function ledger(): LedgerQuery
     {
-        return Ledger::query();
+        return static::current()?->scope(Ledger::query()) ?? Ledger::query();
+    }
+
+    /**
+     * Limit every ledger read to the current Filament tenant through a ledger
+     * context tag. The value is the tenant's key unless $value maps the
+     * tenant (closure receiving `$tenant`) to the value your app tags with.
+     * The tag must be in the ledger's `tags.allowed` list.
+     */
+    public function scopeToTenant(?string $tag, ?Closure $value = null): static
+    {
+        $this->tenantTag = $tag;
+        $this->tenantValueUsing = $value;
+
+        return $this;
+    }
+
+    public function getTenantTag(): ?string
+    {
+        return $this->tenantTag;
+    }
+
+    /**
+     * The tag value for the current tenant, or NO_TENANT when there is none.
+     * Scalars go to the ledger as they are, so its tag normalisation applies.
+     */
+    public function getTenantValue(): string|int|float|bool
+    {
+        $tenant = Filament::getTenant();
+
+        if (! $tenant instanceof Model) {
+            return self::NO_TENANT;
+        }
+
+        $value = $this->tenantValueUsing === null
+            ? $tenant->getKey()
+            : $this->evaluate($this->tenantValueUsing, ['tenant' => $tenant], [Model::class => $tenant, $tenant::class => $tenant]);
+
+        if (is_string($value) || is_int($value) || is_float($value) || is_bool($value)) {
+            return $value;
+        }
+
+        throw new InvalidArgumentException('The Headroom tenant value must resolve to a scalar, '.get_debug_type($value).' given.');
+    }
+
+    public function scope(LedgerQuery $query): LedgerQuery
+    {
+        if ($this->tenantTag === null) {
+            return $query;
+        }
+
+        return $query->forTag($this->tenantTag, $this->getTenantValue());
     }
 
     public function getId(): string

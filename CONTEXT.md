@@ -76,7 +76,8 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | Trends compare one currency only | Different currencies are never added or compared; multi-currency spend shows each amount with no trend or sparkline |
 | Widgets are never added with `$panel->widgets()` | That list is the panel's own dashboard; Headroom widgets appear on the Overview page or wherever a host places them, and `widgets()` gates them through `canView()` |
 | `pages()` / `widgets()` accept any Page / Widget subclass | Users customise by subclassing a built-in part; `HeadroomPlugin::PAGES` and `WIDGETS` hold the defaults |
-| Every ledger read starts from `HeadroomPlugin::ledger()` | One place to add scoping (tenants) for pages and widgets alike; widgets reach it through `QueriesLedger::ledgerBase()` |
+| Every ledger read starts from `HeadroomPlugin::ledger()` | It applies `scopeToTenant()` (`forTag($tag, tenant value)`) for pages, widgets, filter options, runs and the detail view alike; widgets reach it through `QueriesLedger::ledgerBase()` |
+| Tenant scoping fails closed | No current tenant means `HeadroomPlugin::NO_TENANT` (U+FFFF prefix, valid UTF-8 everywhere, unlike a NUL byte on PostgreSQL), so nothing matches; tenant values pass to the ledger as raw scalars so its tag normalisation applies; the tenant tag is dropped from the Requests filters |
 | `HeadroomPlugin::current()` returns null on panels without the plugin | Widgets on host dashboards still get the local-only default instead of throwing |
 | Require Headroom directly, not just via the ledger | The plugin uses Headroom enums such as `CountMethod` |
 | No Docker, FrankenPHP, Makefile or MySQL | Package development only: PHP and Composer in WSL, Testbench on SQLite. Overrides the default stack in `.claude/rules/RULES.md` |
