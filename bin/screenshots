@@ -1,0 +1,90 @@
+#!/usr/bin/env sh
+# Captures every page and widget from the seeded workbench, light and dark,
+# into docs/screenshots/. Needs Google Chrome or Chromium and a built
+# workbench (composer build). Usage: composer screenshots
+set -eu
+
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+OUT="$ROOT/docs/screenshots"
+PORT=${SCREENSHOT_PORT:-8000}
+WIDTH=1400
+BASE="http://127.0.0.1:$PORT"
+
+CHROME=${CHROME:-}
+for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+    if [ -z "$CHROME" ] && command -v "$candidate" > /dev/null 2>&1; then
+        CHROME=$candidate
+    fi
+done
+
+if [ -z "$CHROME" ]; then
+    echo "error: Google Chrome or Chromium is required (or set CHROME)."
+    exit 1
+fi
+
+if ss -tln 2>/dev/null | grep -q ":$PORT "; then
+    echo "error: port $PORT is in use; set SCREENSHOT_PORT to a free port."
+    exit 1
+fi
+
+PROFILE=$(mktemp -d)
+cd "$ROOT"
+vendor/bin/testbench serve --port="$PORT" > "$PROFILE/serve.log" 2>&1 &
+SERVER=$!
+
+cleanup() {
+    kill "$SERVER" 2> /dev/null || true
+    pkill -f "php -S 127.0.0.1:$PORT" 2> /dev/null || true
+    rm -rf "$PROFILE"
+}
+trap cleanup EXIT INT TERM
+
+tries=0
+until curl -s -o /dev/null "$BASE/admin/login"; do
+    tries=$((tries + 1))
+    if [ "$tries" -gt 40 ]; then
+        echo "error: the workbench did not start; run composer build first."
+        exit 1
+    fi
+    sleep 0.5
+done
+
+# A run step for the detail page, read through the ledger's query API.
+STEP=$(vendor/bin/testbench tinker --execute='foreach (\Phoenix1331\AiHeadroomLedger\Facades\Ledger::query()->lastDays(30)->byRun()->tokens() as $run) { if ($run->value->requests >= 4) { echo \Phoenix1331\AiHeadroomLedger\Facades\Ledger::run($run->key)->steps->all()[1]->requestId; break; } }' 2> /dev/null | tail -n 1)
+
+mkdir -p "$OUT"
+
+shoot() { # mode, name, path, height
+    flags=""
+    if [ "$1" = dark ]; then
+        flags="--force-dark-mode --blink-settings=preferredColorScheme=0"
+    fi
+
+    # shellcheck disable=SC2086
+    "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+        --user-data-dir="$PROFILE/$1" --virtual-time-budget=14000 $flags \
+        --window-size="$WIDTH,$4" --screenshot="$OUT/$2-$1.png" "$BASE$3" > /dev/null 2>&1
+    echo "  docs/screenshots/$2-$1.png"
+}
+
+for mode in light dark; do
+    flags=""
+    if [ "$mode" = dark ]; then
+        flags="--force-dark-mode --blink-settings=preferredColorScheme=0"
+    fi
+
+    # shellcheck disable=SC2086
+    "$CHROME" --headless=new --no-sandbox --disable-gpu --user-data-dir="$PROFILE/$mode" \
+        --virtual-time-budget=8000 $flags --dump-dom "$BASE/_workbench" > /dev/null 2>&1
+
+    echo "$mode:"
+    shoot "$mode" overview /admin/headroom 2700
+    shoot "$mode" requests /admin/headroom/requests 1000
+    shoot "$mode" runs "/admin/headroom/requests?group=run" 900
+    shoot "$mode" request-detail "/admin/headroom/requests/$STEP" 1500
+    shoot "$mode" models /admin/headroom/models 700
+
+    for widget in stats-overview:440 spend-over-time:530 tokens-by-agent:440 context-headroom:440 closest-to-limit:500 estimate-accuracy:530 blocked-warned-failed:780; do
+        shoot "$mode" "widget-${widget%%:*}" "/admin/widget-preview?widget=${widget%%:*}" "${widget#*:}"
+    done
+done

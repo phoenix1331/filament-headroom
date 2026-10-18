@@ -49,7 +49,8 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `resources/views/` | Blade views where Filament components are not enough |
 | `tests/` | Pest + Testbench with a Filament panel registered; arch tests enforce the data access rule. `tests/Concerns/WithLedgerDatabase.php` migrates the ledger tables for tests that need data; `tests/Fixtures/` holds pages and widgets that exercise the concerns |
 | `workbench/` | Testbench workbench: Filament panel using the plugin, ledger migrations, seeder built on `LedgerEntryFactory`. Export-ignored |
-| `docs/` | GitHub Pages site and screenshots. Export-ignored |
+| `docs/` | GitHub Pages site and `docs/screenshots/` (every page and widget, light and dark). Export-ignored |
+| `bin/screenshots` | `composer screenshots`: POSIX script that serves the built workbench on `SCREENSHOT_PORT` (8000), logs in via `/_workbench` with a throwaway Chrome profile and captures pages plus each widget through the workbench-only `WidgetPreview` page (one widget, panel chrome hidden). Needs Chrome or Chromium (`CHROME` to override). Export-ignored |
 
 Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php`, `src/Concerns/`, the `tests/` scaffolding and the workbench. Treat the rest of the table as the target layout.
 

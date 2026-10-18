@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Workbench\App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Workbench\App\Filament\Pages\WidgetPreview;
 
 /**
  * Ledger settings an app would put in config/headroom-ledger.php: the tags
@@ -18,5 +19,10 @@ class WorkbenchServiceProvider extends ServiceProvider
             'headroom-ledger.tags.allowed' => ['tenant_id', 'feature'],
             'headroom-ledger.tags.primary_tag' => 'tenant_id',
         ]);
+    }
+
+    public function boot(): void
+    {
+        WidgetPreview::hideChrome();
     }
 }

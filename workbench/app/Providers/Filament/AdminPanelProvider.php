@@ -21,6 +21,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Phoenix1331\FilamentHeadroom\HeadroomPlugin;
 use Phoenix1331\FilamentHeadroom\Widgets\StatsOverview;
 use Workbench\App\Filament\Pages\Dashboard;
+use Workbench\App\Filament\Pages\WidgetPreview;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -32,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors(['primary' => Color::Indigo])
-            ->pages([Dashboard::class])
+            ->pages([Dashboard::class, WidgetPreview::class])
             ->widgets([AccountWidget::class, StatsOverview::class])
             ->plugin(
                 HeadroomPlugin::make()->tagLabel(fn (string $key, string $value): string => match ($key) {
