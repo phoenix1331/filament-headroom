@@ -17,6 +17,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use InvalidArgumentException;
 use LogicException;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
+use Phoenix1331\FilamentHeadroom\Widgets\ContextHeadroom;
 use Phoenix1331\FilamentHeadroom\Widgets\SpendOverTime;
 use Phoenix1331\FilamentHeadroom\Widgets\StatsOverview;
 use Phoenix1331\FilamentHeadroom\Widgets\TokensByAgent;
@@ -44,6 +45,7 @@ class HeadroomPlugin implements Plugin
         StatsOverview::class,
         SpendOverTime::class,
         TokensByAgent::class,
+        ContextHeadroom::class,
     ];
 
     protected bool|Closure|null $authorizeUsing = null;

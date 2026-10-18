@@ -39,4 +39,13 @@ return [
         'no_agent' => 'No agent',
         'unreported' => '{1} Reported usage only: :count request never reported usage and is not included.|[2,*] Reported usage only: :count requests never reported usage and are not included.',
     ],
+
+    'context_headroom' => [
+        'heading' => 'Context headroom',
+        'requests' => 'Requests',
+        'bucket' => ':from-:to%',
+        'over' => ':percent%+',
+        'empty' => 'No counted requests in this range.',
+        'near_limit' => '{0} Share of the context window used, from pre-flight counts; over 100% did not fit. No requests reached :percent%.|{1} Share of the context window used, from pre-flight counts; over 100% did not fit. :count request reached :percent% or more.|[2,*] Share of the context window used, from pre-flight counts; over 100% did not fit. :count requests reached :percent% or more.',
+    ],
 ];

@@ -27,6 +27,7 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Widgets/StatsOverview.php` | Spend (trend vs previous period, sparkline, single currency only), requests, average/peak context, blocked, warned. No polling |
 | `src/Widgets/SpendOverTime.php` | Line chart per model/provider (filter), top `ChartPalette::slots()` series plus "Other" = daily total minus drawn series; largest currency drawn, others named |
 | `src/Widgets/TokensByAgent.php` | Stacked horizontal bars of reported input/output per agent (top `MAX_AGENTS`, rest folded); unreported requests counted in the description, never drawn |
+| `src/Widgets/ContextHeadroom.php` | Distribution of pre-flight percent used in `EDGES` buckets, each from `nearLimit($edge)->count()` differences (one raw count per edge; ledger L2 would make it one query). Closest-to-limit list waits for ledger 0.1.1 sorting |
 | `src/Support/ChartPalette.php` | Six categorical slots + neutral "Other", light and dark, validated with the dataviz palette validator on `#ffffff` / `#18181b`; a Chart.js scriptable picks the mode at draw time. Slots go by series name, not rank |
 | `src/Pages/` | Overview, Requests (table, filters, run grouping, detail view, GDPR action), Models |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
