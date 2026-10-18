@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Headroom for Filament</title>
+<meta name="description" content="A Filament dashboard for AI token usage, cost and context limits, powered by Headroom. Spend, tokens, context headroom, estimate accuracy and every request, with estimates never shown as billed cost.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* Same tokens and components as the Headroom and Headroom Ledger sites, so the packages read as one suite. */
+  :root {
+    color-scheme: dark;
+    --fog: #10182B;
+    --paper: #18233A;
+    --ink: #E7ECF3;
+    --ink-soft: #A9B5C9;
+    --rule: #2E3B57;
+    --limit: #FF5A5F;
+    --instructions: #6FA3DB;
+    --history: #F2C14E;
+    --tools: #5CC08A;
+    --code-bg: #0A1020;
+    --code-ink: #E7ECF3;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--fog);
+    color: var(--ink);
+    font-family: "Archivo", system-ui, sans-serif;
+    font-variation-settings: "wdth" 100;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { text-decoration-thickness: 2px; }
+  :focus-visible { outline: 3px solid var(--instructions); outline-offset: 3px; border-radius: 2px; }
+
+  .wrap { max-width: 72rem; margin: 0 auto; padding: 0 1rem; }
+  .measure { max-width: 42rem; }
+
+  h1, h2, h3 { font-variation-settings: "wdth" 125; line-height: 1.1; letter-spacing: -0.01em; }
+  h1 { font-size: clamp(2.25rem, 6vw, 4.25rem); font-weight: 800; margin: 0 0 1.25rem; max-width: 17ch; }
+  h2 { font-size: clamp(1.5rem, 3vw, 2.125rem); font-weight: 750; margin: 0 0 1rem; }
+  h3 { font-size: 1.125rem; font-weight: 700; margin: 2rem 0 0.5rem; }
+  p { margin: 0 0 1rem; }
+  .lede { font-size: 1.25rem; color: var(--ink-soft); max-width: 40rem; }
+
+  header.site { padding: 1.25rem 0; }
+  header.site .wrap { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .brand { font-weight: 800; font-variation-settings: "wdth" 125; text-decoration: none; font-size: 1.25rem; display: inline-flex; align-items: baseline; gap: 0.4rem; }
+  .brand span { color: var(--history); }
+
+  nav.links { display: flex; gap: 1.25rem; flex-wrap: wrap; font-size: 0.9375rem; }
+
+  .hero { padding-top: 3rem; padding-bottom: 2rem; }
+
+  .install {
+    margin: 0.5rem 0 2.5rem; background: var(--code-bg); color: var(--code-ink); border-radius: 6px;
+    padding: 0.75rem 0.75rem 0.75rem 1rem; display: flex; align-items: flex-start; gap: 0.75rem; max-width: 46rem;
+  }
+  .install pre { margin: 0; padding: 0; background: none; font-size: 0.9375rem; flex: 1; min-width: 0; }
+  .install button {
+    font: inherit; font-family: "Archivo", sans-serif; font-size: 0.875rem; font-weight: 600; flex: none;
+    background: var(--code-ink); color: var(--code-bg); border: 0; border-radius: 4px; padding: 0.35rem 0.75rem; cursor: pointer;
+  }
+
+  /* The dashboard shot: the one bold element on the page */
+  .showcase { margin: 0; background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; padding: 1.5rem; }
+  .showcase-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem 1rem; margin: 0 0 1rem; }
+  .showcase-title { font-weight: 700; margin: 0; }
+  .scenarios { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; }
+  .scenarios button {
+    font: inherit; font-size: 0.9375rem; font-weight: 600; cursor: pointer; color: var(--ink);
+    background: transparent; border: 1px solid var(--rule); border-radius: 999px; padding: 0.35rem 0.9rem;
+  }
+  .scenarios button[aria-pressed="true"] { background: var(--ink); color: var(--fog); border-color: var(--ink); }
+  .shot { display: block; width: 100%; height: auto; border-radius: 6px; border: 1px solid var(--rule); background: var(--fog); }
+  .showcase .shot { max-height: 46rem; object-fit: cover; object-position: top; }
+  .showcase-note { font-size: 0.875rem; color: var(--ink-soft); margin: 0.75rem 0 0; }
+
+  section { padding: 3.5rem 0; border-top: 1px solid var(--rule); }
+
+  /* Ligatures would draw PHP's -> and => as arrows, which misleads in code. */
+  code, pre { font-family: "JetBrains Mono", ui-monospace, monospace; font-variant-ligatures: none; }
+  :not(pre) > code { font-size: 0.9em; background: color-mix(in srgb, var(--ink) 8%, transparent); padding: 0.1em 0.35em; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-ink); padding: 1.125rem 1.25rem; border-radius: 8px;
+    overflow-x: auto; font-size: 0.875rem; line-height: 1.6; margin: 0 0 1.25rem; max-width: 46rem;
+  }
+  pre .c { color: #8FA0BC; }
+  pre .k { color: #F2C14E; }
+  pre .s { color: #8FD3A8; }
+
+  .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
+  .gallery li { margin: 0; }
+  .gallery li.wide { grid-column: 1 / -1; }
+  .gallery h3 { margin: 0 0 0.25rem; }
+  .gallery p { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.9375rem; }
+  .gallery .shot { max-height: 26rem; object-fit: cover; object-position: top; }
+  .gallery li.wide .shot { max-height: 34rem; }
+
+  .badges { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; max-width: 60rem; margin: 1.5rem 0; padding: 0; list-style: none; }
+  .badges li { border: 1px solid var(--rule); border-radius: 8px; padding: 1rem 1.25rem; background: var(--paper); }
+  .badge { display: inline-block; font-weight: 700; font-size: 0.8125rem; padding: 0.1rem 0.5rem; border-radius: 4px; border: 1px solid currentColor; margin-bottom: 0.5rem; }
+  .badge.estimate { color: var(--history); }
+  .badge.approximate { color: var(--ink-soft); }
+  .badges p { margin: 0; font-size: 0.9375rem; color: var(--ink-soft); }
+
+  .steps { list-style: none; padding: 0; margin: 0; counter-reset: step; max-width: 46rem; }
+  .steps > li { counter-increment: step; position: relative; padding-left: 2.75rem; margin-bottom: 1.5rem; }
+  .steps > li::before {
+    content: counter(step); position: absolute; left: 0; top: 0.1rem; width: 1.875rem; height: 1.875rem; border-radius: 50%;
+    border: 2px solid var(--ink); display: grid; place-items: center; font-weight: 800; font-size: 0.9375rem;
+  }
+  .steps h3 { margin-top: 0.15rem; }
+
+  table { border-collapse: collapse; width: 100%; max-width: 46rem; margin: 0 0 1.25rem; font-size: 0.9375rem; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem 0.6rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 700; }
+  .table-scroll { overflow-x: auto; max-width: 100%; }
+
+  .flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; max-width: 56rem; margin: 1.5rem 0; padding: 0; list-style: none; }
+  .flow li { padding: 1rem 1.25rem 1rem 0; border-top: 3px solid var(--ink); font-size: 0.9375rem; }
+  .flow li strong { display: block; margin-bottom: 0.25rem; }
+
+  .family { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; max-width: 60rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
+  .family li { border: 1px solid var(--rule); border-radius: 8px; padding: 1rem 1.25rem; background: var(--paper); }
+  .family li.here { border-color: var(--history); }
+  .family strong { display: block; font-variation-settings: "wdth" 115; margin-bottom: 0.25rem; }
+  .family code { font-size: 0.8125rem; word-break: break-all; }
+  .family p { margin: 0.5rem 0 0; font-size: 0.9375rem; color: var(--ink-soft); }
+
+  footer { padding: 2.5rem 0 3.5rem; border-top: 1px solid var(--rule); color: var(--ink-soft); font-size: 0.9375rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; }
+
+  @media (max-width: 720px) {
+    .showcase { padding: 1rem; }
+    .gallery, .badges, .flow, .family { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#">Headroom <span>for Filament</span></a>
+    <nav class="links" aria-label="Project">
+      <a href="https://github.com/phoenix1331/filament-headroom">GitHub</a>
+      <a href="https://packagist.org/packages/phoenix1331/filament-headroom">Packagist</a>
+      <a href="https://github.com/phoenix1331/filament-headroom/blob/main/CHANGELOG.md">Changelog</a>
+      <a href="https://phoenix1331.github.io/laravel-ai-headroom">Headroom</a>
+      <a href="https://phoenix1331.github.io/laravel-ai-headroom-ledger">Ledger</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="hero wrap">
+    <h1>See what your AI requests cost, inside Filament.</h1>
+    <p class="lede">Headroom for Filament is a dashboard for your Filament panel: spend and its trend, tokens by agent, how close requests came to their context window, how accurate the estimates were, and every request and agent run. It reads the <a href="https://phoenix1331.github.io/laravel-ai-headroom-ledger">Headroom Ledger</a>, stores nothing itself, and never shows an estimate as billed cost.</p>
+
+    <div class="install">
+      <pre id="install-command">composer require phoenix1331/filament-headroom
+php artisan vendor:publish --tag=headroom-ledger-migrations
+php artisan migrate
+php artisan filament:assets</pre>
+      <button type="button" id="copy-install">Copy</button>
+    </div>
+
+    <figure class="showcase" aria-labelledby="showcase-title">
+      <div class="showcase-head">
+        <p class="showcase-title" id="showcase-title">The Overview page, from 90 days of demo data</p>
+        <div class="scenarios" role="group" aria-label="Theme of the screenshot">
+          <button type="button" data-theme="dark" aria-pressed="true">Dark</button>
+          <button type="button" data-theme="light" aria-pressed="false">Light</button>
+        </div>
+      </div>
+      <img class="shot" id="showcase-shot" src="screenshots/overview-dark.png" width="1400" height="2700" alt="The Headroom Overview page: a range picker; spend of $77.45 with an Includes estimates badge and its trend; request, context, blocked and warned counts; spend over time per model; tokens by agent; context headroom; the requests closest to their limit; estimate accuracy per model; and the latest blocked, warned and failed requests">
+      <p class="showcase-note">Charts follow the panel theme. Their colours are checked for colour vision deficiency on both.</p>
+    </figure>
+  </div>
+
+  <section id="why">
+    <div class="wrap"><div class="measure">
+      <h2>The pre-flight side of AI spend, where your team already works</h2>
+      <p>Most AI cost dashboards only know what a request cost after it ran. Headroom counts every request before it is sent, so this dashboard also shows what was predicted: how far off the estimates are per model, which agents creep towards their context limit, and which requests were warned or blocked before they could cost anything.</p>
+      <p>It installs as a Filament plugin, so it sits in the admin panel your team already uses, behind the same login, with your own authorisation rule.</p>
+    </div></div>
+  </section>
+
+  <section id="pages">
+    <div class="wrap">
+      <div class="measure">
+        <h2>Three pages and eight widgets</h2>
+        <p>Every widget follows the page's range (7, 30 or 90 days). Pages, widgets and navigation can each be turned off, reordered or regrouped.</p>
+      </div>
+      <ul class="gallery">
+        <li>
+          <h3>Requests</h3>
+          <p>Every ledger entry, paginated and sorted by the ledger, filtered by range, agent, provider, model, outcome, count method and your context tags.</p>
+          <img class="shot" src="screenshots/requests-dark.png" width="1400" height="1000" loading="lazy" alt="The Requests table: time, outcome badge, agent, model with provider and count method, input and output tokens, context used and cost, with Estimate labels on requests that never reported usage">
+        </li>
+        <li>
+          <h3>Agent runs</h3>
+          <p>Group by run to see each agent invocation: its steps, tokens, peak context, cost and any warned, blocked or failed steps.</p>
+          <img class="shot" src="screenshots/runs-dark.png" width="1400" height="900" loading="lazy" alt="The Requests page grouped by agent run, with steps, input, output, peak context and cost per run">
+        </li>
+        <li>
+          <h3>Request detail</h3>
+          <p>Estimate against reported tokens, the input breakdown, cost with its basis, and every step of the run with how much the context grew.</p>
+          <img class="shot" src="screenshots/request-detail-dark.png" width="1400" height="1500" loading="lazy" alt="A request detail page with request facts, tokens, cost, the input breakdown and the agent run's steps with context growth">
+        </li>
+        <li>
+          <h3>Models</h3>
+          <p>Per model: requests, spend, average and peak context, blocked and warned counts, estimate error and bias, and Headroom's calibration status.</p>
+          <img class="shot" src="screenshots/models-dark.png" width="1400" height="700" loading="lazy" alt="The Models table with spend, context, blocked, warned, estimate error and calibration status per model">
+        </li>
+        <li class="wide">
+          <h3>Widgets</h3>
+          <p>Stats overview, spend over time, tokens by agent, context headroom, closest to the limit, estimate accuracy, and blocked, warned and failed requests.</p>
+          <img class="shot" src="screenshots/widget-spend-over-time-dark.png" width="1400" height="530" loading="lazy" alt="The Spend over time widget: daily spend per model as lines, with a note that it includes estimates for requests that never reported usage">
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="honest">
+    <div class="wrap">
+      <div class="measure">
+        <h2>An estimate is never shown as billed cost</h2>
+        <p>Headroom prices requests before they are sent, and the ledger keeps that estimate apart from what the provider reported. Every cost on every page and widget carries its basis:</p>
+      </div>
+      <ul class="badges">
+        <li><span class="badge estimate">Estimate</span><p>No usage was reported: the request was blocked, failed or never answered, so this is Headroom's pre-flight worst case.</p></li>
+        <li><span class="badge estimate">Includes estimates</span><p>A total where some requests never reported usage and count at their estimate.</p></li>
+        <li><span class="badge approximate">Approximate</span><p>Usage was reported, but cache tokens could not be priced exactly.</p></li>
+      </ul>
+      <div class="measure">
+        <p>Amounts in different currencies are kept apart and never converted, and sub-cent costs keep four decimals so they do not read as zero. Token charts show reported tokens only and say how many requests never reported usage.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2>Install</h2>
+      <ol class="steps">
+        <li>
+          <h3>Require the plugin</h3>
+          <p>It brings <a href="https://github.com/phoenix1331/laravel-ai-headroom">Headroom</a> and the <a href="https://github.com/phoenix1331/laravel-ai-headroom-ledger">Headroom Ledger</a> with it. Needs PHP 8.3+, Laravel 12 or 13 and Filament 5.</p>
+<pre>composer require phoenix1331/filament-headroom</pre>
+        </li>
+        <li>
+          <h3>Create the ledger tables</h3>
+<pre>php artisan vendor:publish --tag=headroom-ledger-migrations
+php artisan migrate</pre>
+        </li>
+        <li>
+          <h3>Register the plugin and say who may see it</h3>
+          <p>Without <code>authorize()</code> the dashboard is only visible in the <code>local</code> environment, like Horizon and Pulse.</p>
+<pre><span class="k">use</span> Phoenix1331\FilamentHeadroom\HeadroomPlugin;
+
+<span class="k">public function</span> panel(Panel $panel): Panel
+{
+    <span class="k">return</span> $panel
+        <span class="c">// ...</span>
+        -&gt;plugin(
+            HeadroomPlugin::make()
+                -&gt;authorize(<span class="k">fn</span> ($user): bool =&gt; $user-&gt;isAdmin()),
+        );
+}</pre>
+        </li>
+        <li>
+          <h3>Publish the stylesheet</h3>
+<pre>php artisan filament:assets</pre>
+        </li>
+        <li>
+          <h3>Record some traffic</h3>
+          <p>The ledger records every request your agents send through Headroom. Pages appear in your panel under a <strong>Headroom</strong> group: Overview, Requests and Models.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="configure">
+    <div class="wrap">
+      <div class="measure">
+        <h2>Configure</h2>
+        <p>Every option is a fluent method on the plugin, and closures are welcome wherever a value depends on the request.</p>
+      </div>
+<pre>HeadroomPlugin::make()
+    -&gt;authorize(<span class="k">fn</span> ($user): bool =&gt; $user-&gt;can(<span class="s">'viewAiUsage'</span>))
+    -&gt;navigationGroup(<span class="s">'Monitoring'</span>)          <span class="c">// null for no group</span>
+    -&gt;navigationSort(<span class="s">20</span>)                      <span class="c">// moves the whole Headroom block</span>
+    -&gt;navigationIcon(<span class="s">'heroicon-o-cpu-chip'</span>, Overview::<span class="k">class</span>)
+    -&gt;defaultRange(<span class="s">'7d'</span>)                      <span class="c">// '7d', '30d' (default) or '90d'</span>
+    -&gt;tagLabel(<span class="k">fn</span> (string $key, string $value): string =&gt;
+        $key === <span class="s">'tenant_id'</span> ? Team::find($value)?-&gt;name ?? $value : $value)
+    -&gt;widgets([StatsOverview::<span class="k">class</span>, SpendOverTime::<span class="k">class</span>])
+    -&gt;pages([Overview::<span class="k">class</span>, Requests::<span class="k">class</span>]);</pre>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Option</th><th>Default</th></tr></thead>
+          <tbody>
+            <tr><td><code>authorize()</code></td><td>Visible only in <code>local</code>; the callback must return exactly <code>true</code></td></tr>
+            <tr><td><code>navigationGroup()</code>, <code>navigationIcon()</code>, <code>navigationSort()</code></td><td>A translated "Headroom" group; each page's own icon and order</td></tr>
+            <tr><td><code>defaultRange()</code></td><td>30 days</td></tr>
+            <tr><td><code>tagLabel()</code></td><td><code>key: value</code></td></tr>
+            <tr><td><code>widgets()</code>, <code>pages()</code></td><td>All of them; pass a subclass to customise one</td></tr>
+            <tr><td><code>scopeToTenant()</code></td><td>Off</td></tr>
+            <tr><td><code>allowForgettingTags()</code></td><td>Off</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="dashboards">
+    <div class="wrap"><div class="measure">
+      <h2>On your own dashboards too</h2>
+      <p>Every widget works on any Filament dashboard, following the same authorisation. Add the range picker to the dashboard's filters form and they follow it:</p>
+<pre><span class="k">use</span> Phoenix1331\FilamentHeadroom\Support\RangeSelect;
+<span class="k">use</span> Phoenix1331\FilamentHeadroom\Widgets\StatsOverview;
+
+<span class="k">class</span> Dashboard <span class="k">extends</span> BaseDashboard
+{
+    <span class="k">use</span> HasFiltersForm;
+
+    <span class="k">public function</span> filtersForm(Schema $schema): Schema
+    {
+        <span class="k">return</span> $schema-&gt;components([RangeSelect::make()]);
+    }
+}</pre>
+    </div></div>
+  </section>
+
+  <section id="security">
+    <div class="wrap">
+      <div class="measure">
+        <h2>Authorisation, tenants and data subject requests</h2>
+      </div>
+      <ul class="flow">
+        <li><strong>Closed by default</strong>Nothing is visible outside <code>local</code> until you set <code>authorize()</code>. Widgets refuse to load for users who may not see them, even when loaded directly.</li>
+        <li><strong>One tenant at a time</strong><code>scopeToTenant('tenant_id')</code> limits every page, widget, filter, run and detail view to the current Filament tenant. With no tenant, nothing matches.</li>
+        <li><strong>Forget on request</strong><code>allowForgettingTags()</code> adds a confirmed action that erases a tag value, such as a user ID, through the ledger. Off by default and never offered under tenant scoping.</li>
+      </ul>
+      <div class="measure">
+        <p>Tests check every page and widget for leaks between tenants. The ledger never stores prompt or response text, so the dashboard cannot show it. See the <a href="https://github.com/phoenix1331/filament-headroom/blob/main/SECURITY.md">security policy</a> for the details.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="family">
+    <div class="wrap">
+      <div class="measure">
+        <h2>The Headroom family</h2>
+        <p>Three packages, each useful on its own.</p>
+      </div>
+      <ul class="family">
+        <li>
+          <strong>Headroom</strong>
+          <code>phoenix1331/laravel-ai-headroom</code>
+          <p>Counts tokens before a request is sent, guards context and cost limits, calibrates estimates. Stores nothing. <a href="https://phoenix1331.github.io/laravel-ai-headroom">Site</a></p>
+        </li>
+        <li>
+          <strong>Headroom Ledger</strong>
+          <code>phoenix1331/laravel-ai-headroom-ledger</code>
+          <p>Records every request Headroom sees and answers questions about them through a typed query API. <a href="https://phoenix1331.github.io/laravel-ai-headroom-ledger">Site</a></p>
+        </li>
+        <li class="here">
+          <strong>Headroom for Filament</strong>
+          <code>phoenix1331/filament-headroom</code>
+          <p>This package: the dashboard over the ledger, in your Filament panel.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>MIT licence. Built by <a href="https://phoenix1331.co.uk">Darren Williams</a>.</span>
+    <span><a href="https://github.com/phoenix1331/filament-headroom">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('copy-install').addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+
+    try {
+      await navigator.clipboard.writeText(document.getElementById('install-command').textContent);
+      button.textContent = 'Copied';
+    } catch {
+      button.textContent = 'Select and copy';
+    }
+
+    setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+  });
+
+  const shot = document.getElementById('showcase-shot');
+
+  document.querySelectorAll('[data-theme]').forEach((button) => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('[data-theme]').forEach((other) => other.setAttribute('aria-pressed', String(other === button)));
+      shot.src = `screenshots/overview-${button.dataset.theme}.png`;
+    });
+  });
+</script>
+</body>
+</html>
