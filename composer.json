@@ -51,5 +51,9 @@
         "sort-packages": true
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "require-dev": {
+        "larastan/larastan": "*",
+        "laravel/pint": "^1.32"
+    }
 }

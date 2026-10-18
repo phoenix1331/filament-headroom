@@ -50,10 +50,14 @@ Only `src/HeadroomPlugin.php` and `src/FilamentHeadroomServiceProvider.php` exis
 | `illuminate/contracts`, `illuminate/support` | `^12.0\|^13.0` | Ledger and Headroom range (Filament alone allows 11) |
 | `phoenix1331/laravel-ai-headroom` | `^0.1` | Enums used directly |
 | `phoenix1331/laravel-ai-headroom-ledger` | `^0.1` | Query API, `LedgerEntryFactory` for seeding |
+| `laravel/pint` (dev) | `^1.32` | Code style; `pint.json` uses the `laravel` preset plus `declare_strict_types` |
+| `husky` (npm dev) | `^9.1.7` | Tracked `.husky/` hooks: `commit-msg` (lowercase conventional commits, no scopes), `pre-commit` (`pint --test`, `osv-scanner --lockfile=composer.lock`). POSIX `sh` only |
 
 ## Local setup
 
 - PHP 8.4 in WSL with `intl` (`sudo apt install php8.4-intl`) and `pcov` for coverage
+- `osv-scanner` on the PATH (`go install github.com/google/osv-scanner/cmd/osv-scanner@latest`) for the pre-commit hook
+- `npm install` once to activate the Husky hooks
 - `composer install`, then the composer scripts (`lint`, `analyse`, `test`, `test:coverage`, `check`)
 - `composer.lock` is gitignored, as for any library
 
