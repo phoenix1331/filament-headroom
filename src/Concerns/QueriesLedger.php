@@ -8,6 +8,7 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Phoenix1331\AiHeadroomLedger\Facades\Ledger;
 use Phoenix1331\AiHeadroomLedger\Query\LedgerQuery;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
+use Phoenix1331\FilamentHeadroom\Support\RangeSelect;
 
 /**
  * For Headroom widgets: the range comes from the page's `range` filter (the
@@ -21,7 +22,7 @@ trait QueriesLedger
 
     protected function range(): Range
     {
-        return Range::resolve($this->pageFilters['range'] ?? null);
+        return Range::resolve($this->pageFilters[RangeSelect::NAME] ?? null);
     }
 
     /**

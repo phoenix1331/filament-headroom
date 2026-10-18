@@ -8,7 +8,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -26,6 +25,7 @@ use Phoenix1331\FilamentHeadroom\Widgets\EstimateAccuracy;
 use Phoenix1331\FilamentHeadroom\Widgets\SpendOverTime;
 use Phoenix1331\FilamentHeadroom\Widgets\StatsOverview;
 use Phoenix1331\FilamentHeadroom\Widgets\TokensByAgent;
+use Workbench\App\Filament\Pages\Dashboard;
 
 class AdminPanelProvider extends PanelProvider
 {

@@ -31,6 +31,7 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Widgets/EstimateAccuracy.php` | `errorPercent()` per model per `Range::buckets()` point (1, 3 or 7 days), count method filter, null (gap) where a bucket has no samples. One `accuracy()` per bucket until ledger `GroupedQuery::accuracy()` (gap 4) |
 | `src/Widgets/BlockedWarnedFailed.php` | Table widget over array records (`key` = request ID) from `withOutcome(...)->entries(LIMIT)` |
 | `src/Support/Outcomes.php` | Outcome label and badge colour; `reason()` turns a `LimitType` value or `ExceptionClass:status` into words |
+| `src/Support/RangeSelect.php` | `Select` for a dashboard's filters form under the `range` key (`RangeSelect::NAME`) that `QueriesLedger` reads; default from the plugin |
 | `src/Support/ChartPalette.php` | Six categorical slots + neutral "Other", light and dark, validated with the dataviz palette validator on `#ffffff` / `#18181b`; a Chart.js scriptable picks the mode at draw time. Slots go by series name, not rank |
 | `src/Pages/` | Overview, Requests (table, filters, run grouping, detail view, GDPR action), Models |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
@@ -91,7 +92,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 |---|---|
 | Commands | `composer build` (publish Filament assets, recreate SQLite, migrate, seed) \| `composer serve` (build, then `testbench serve` on port 8000) |
 | Login | `/_workbench` auto-logs in as `demo@example.com` (password `password`) and lands on `/admin` |
-| Panel | `workbench/app/Providers/Filament/AdminPanelProvider.php`: default `admin` panel, Filament Dashboard + `AccountWidget`, `HeadroomPlugin::make()` |
+| Panel | `workbench/app/Providers/Filament/AdminPanelProvider.php`: default `admin` panel, `HeadroomPlugin::make()`, and a host-style dashboard (`workbench/app/Filament/Pages/Dashboard.php` with `RangeSelect`) placing every Headroom widget, as an app would |
 | Migrations | Testbench defaults plus `vendor/phoenix1331/laravel-ai-headroom-ledger/database/migrations` via `testbench.yaml` (the ledger provider only publishes them) |
 | Seeder | `workbench/database/seeders/DatabaseSeeder.php`: 90 days x 3 tenants (`tenant_id` acme/globex/initech, `feature` tag) built on `LedgerEntryFactory`, every outcome, streamed, abandoned, failover, approximate cost, multi-step runs, then `headroom-ledger:rollup --from` |
 | Database | `vendor/orchestra/testbench-core/laravel/database/database.sqlite` (rebuilt on every `composer build`) |
