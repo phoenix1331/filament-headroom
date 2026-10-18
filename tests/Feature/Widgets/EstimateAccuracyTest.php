@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\DB;
 use Phoenix1331\AiHeadroom\Enums\CountMethod;
 use Phoenix1331\AiHeadroomLedger\Database\Factories\LedgerEntryFactory;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
@@ -129,3 +130,16 @@ it('builds attribute-safe options', function (): void {
 
     expect($options)->toContain('spanGaps: false')->not->toContain('"');
 });
+
+it('reads every bucket from one grouped accuracy query', function (string $range): void {
+    estimated('gpt-5', 900, 1_000);
+    estimated('gpt-5', 900, 1_000, daysAgo: 20);
+
+    $component = livewire(EstimateAccuracy::class, ['pageFilters' => ['range' => $range]]);
+
+    DB::flushQueryLog();
+    DB::enableQueryLog();
+    (fn (): array => $this->getData())->call($component->instance());
+
+    expect(count(DB::getQueryLog()))->toBeLessThanOrEqual(3);
+})->with(['7d', '30d', '90d']);

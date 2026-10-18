@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Phoenix1331\FilamentHeadroom\Concerns;
 
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Phoenix1331\AiHeadroomLedger\Facades\Ledger;
 use Phoenix1331\AiHeadroomLedger\Query\LedgerQuery;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
+use Phoenix1331\FilamentHeadroom\HeadroomPlugin;
 use Phoenix1331\FilamentHeadroom\Support\RangeSelect;
 
 /**
@@ -30,7 +30,7 @@ trait QueriesLedger
      */
     protected function ledgerBase(): LedgerQuery
     {
-        return Ledger::query();
+        return HeadroomPlugin::ledger();
     }
 
     protected function ledger(): LedgerQuery

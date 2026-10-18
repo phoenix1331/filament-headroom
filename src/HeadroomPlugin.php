@@ -16,6 +16,8 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Support\Htmlable;
 use InvalidArgumentException;
 use LogicException;
+use Phoenix1331\AiHeadroomLedger\Facades\Ledger;
+use Phoenix1331\AiHeadroomLedger\Query\LedgerQuery;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
 use Phoenix1331\FilamentHeadroom\Pages\Models;
 use Phoenix1331\FilamentHeadroom\Pages\Overview;
@@ -111,6 +113,15 @@ class HeadroomPlugin implements Plugin
     public static function allows(): bool
     {
         return static::current()?->isAuthorized() ?? self::defaultAuthorization();
+    }
+
+    /**
+     * The starting point for every ledger read on Headroom pages and widgets,
+     * so scoping added here applies everywhere.
+     */
+    public static function ledger(): LedgerQuery
+    {
+        return Ledger::query();
     }
 
     public function getId(): string

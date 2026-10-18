@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace Phoenix1331\FilamentHeadroom\Widgets;
 
+use Carbon\CarbonImmutable;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Js;
 use Phoenix1331\AiHeadroom\Enums\CountMethod;
 use Phoenix1331\AiHeadroomLedger\Data\AccuracyStats;
+use Phoenix1331\AiHeadroomLedger\Data\Breakdown;
 use Phoenix1331\FilamentHeadroom\Concerns\AuthorisesWidgetView;
 use Phoenix1331\FilamentHeadroom\Concerns\QueriesLedger;
 use Phoenix1331\FilamentHeadroom\Support\ChartPalette;
 
 /**
  * How far Headroom's pre-flight estimates were from reported input tokens,
- * per model over time, optionally for one count method. Points are buckets
- * of Range::bucketDays() so the query count stays small; a bucket without
- * samples is a gap, not zero.
+ * per model over time, optionally for one count method. One daily accuracy
+ * query, merged into buckets of Range::bucketDays() so the lines are not
+ * noisy; a bucket without samples is a gap, not zero.
  */
 class EstimateAccuracy extends ChartWidget
 {
@@ -80,16 +82,15 @@ class EstimateAccuracy extends ChartWidget
         $buckets = $this->range()->buckets();
         $labels = array_map(fn (array $bucket): string => $bucket[0]->translatedFormat('j M'), $buckets);
 
-        $models = $this->topModels($this->ledger()->accuracy(), $method);
+        $daily = $this->ledger()->byDay()->accuracy();
+        $perBucket = array_map(fn (array $bucket): AccuracyStats => self::merge($daily, ...$bucket), $buckets);
+
+        $models = $this->topModels(new AccuracyStats(array_merge(...array_map(fn (AccuracyStats $stats): array => $stats->all(), $perBucket))), $method);
 
         if ($models === []) {
             return ['labels' => $labels, 'datasets' => []];
         }
 
-        $perBucket = array_map(
-            fn (array $bucket): AccuracyStats => $this->ledgerBase()->between(...$bucket)->accuracy(),
-            $buckets,
-        );
         $slots = ChartPalette::slotsFor($models);
 
         $datasets = [];
@@ -143,6 +144,25 @@ class EstimateAccuracy extends ChartWidget
                 },
             }
             JS);
+    }
+
+    /**
+     * Every day's stats between $from and $to, inclusive, as one set; for()
+     * then combines them per model and method.
+     *
+     * @param  Breakdown<AccuracyStats>  $daily
+     */
+    private static function merge(Breakdown $daily, CarbonImmutable $from, CarbonImmutable $to): AccuracyStats
+    {
+        $stats = [];
+
+        foreach ($daily as $day) {
+            if ($day->key !== null && $day->key >= $from->toDateString() && $day->key <= $to->toDateString()) {
+                array_push($stats, ...$day->value->all());
+            }
+        }
+
+        return new AccuracyStats($stats);
     }
 
     /**
