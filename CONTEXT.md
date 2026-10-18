@@ -43,7 +43,7 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Pages/RequestDetail.php` | `headroom/requests/{requestId}` (`getRoutePath()` override keeps the route name `headroom.requests.view`); only `$requestId` is Livewire state, the entry and run load once per request via `HeadroomPlugin::ledger()->find()` / `run()` (404 when out of scope); added by `register()` whenever a Requests page (or subclass) is enabled, not listed in `PAGES` |
 | `resources/views/run-steps.blade.php` | Run steps table on the detail page: estimated input and growth from the previous step, current step `aria-current` |
 | `resources/dist/filament-headroom.css` | `fi-headroom-*` classes on Filament colour variables, registered with `FilamentAsset` (`filament:assets` publishes it) |
-| `src/Pages/` | Still to come: GDPR action on Requests |
+| `src/Pages/Concerns/ForgetsTags.php` | Requests header action calling `Ledger::forgetTag()` (key from the allowlist, value, confirmation); visible and authorised only when `allowForgettingTags()` returns exactly true, the allowlist is not empty and tenant scoping is off |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
 | `resources/views/` | Blade views where Filament components are not enough |
@@ -78,6 +78,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | `pages()` / `widgets()` accept any Page / Widget subclass | Users customise by subclassing a built-in part; `HeadroomPlugin::PAGES` and `WIDGETS` hold the defaults |
 | Every ledger read starts from `HeadroomPlugin::ledger()` | It applies `scopeToTenant()` (`forTag($tag, tenant value)`) for pages, widgets, filter options, runs and the detail view alike; widgets reach it through `QueriesLedger::ledgerBase()` |
 | `tests/Feature/TenantIsolationTest.php` is the isolation guarantee | Two tenants with disjoint agents, models, providers and tags (and a run spanning both); every widget, page, Requests sort, filter option, run row and detail view is checked for the other tenant's strings, plus no-tenant fail-closed and tenant switching. New pages or widgets must join its datasets |
+| GDPR action is unavailable under tenant scoping | The ledger's `forgetTag()` is global, so a tenant admin could erase another tenant's matching value; a scoped version is proposed as ledger L4 |
 | Tenant scoping fails closed | No current tenant means `HeadroomPlugin::NO_TENANT` (U+FFFF prefix, valid UTF-8 everywhere, unlike a NUL byte on PostgreSQL), so nothing matches; tenant values pass to the ledger as raw scalars so its tag normalisation applies; the tenant tag is dropped from the Requests filters |
 | `HeadroomPlugin::current()` returns null on panels without the plugin | Widgets on host dashboards still get the local-only default instead of throwing |
 | Require Headroom directly, not just via the ledger | The plugin uses Headroom enums such as `CountMethod` |
@@ -131,7 +132,7 @@ Seed through `testbench.yaml` `seeders:` only. Adding `--seed` to the `migrate-f
 
 ## Real-app check (`test-app/`)
 
-Git-ignored and export-ignored copy of `../laravel-docs-rag-playground` (Docker, ports 8020 / 5193 / 5452 / 6399, project `filament-headroom-test-app`) with the Headroom integration ported from the ledger's `test-app`, chat on Gemini, its Postgres volume cloned from the original (docs already embedded with Voyage). `docker-compose.override.yml` mounts this repo at `/packages/filament-headroom` for a Composer path repository (symlinked, so plugin edits show live; rerun `filament:assets` after CSS changes). `/dev-login` (local only) logs in `admin@example.com` for headless screenshots. Verified against `headroom-ledger:report`: requests, spend, context, warned/blocked and accuracy all match; calibration shows real "Learning" state.
+Git-ignored and export-ignored copy of `../laravel-docs-rag-playground` (Docker, ports 8020 / 5193 / 5452 / 6399, project `filament-headroom-test-app`) with the Headroom integration ported from the ledger's `test-app`, chat on Gemini, its Postgres volume cloned from the original (docs already embedded with Voyage). `docker-compose.override.yml` mounts this repo at `/packages/filament-headroom` for a Composer path repository (symlinked, so plugin edits show live; rerun `filament:assets` after CSS changes). JS: `docker compose exec app npm install && npm run build` (the copy skips `node_modules` and `public/build`; without it the Ask page throws `ViteManifestNotFoundException`). `/dev-login` (local only) logs in `admin@example.com` for headless screenshots. Verified against `headroom-ledger:report`: requests, spend, context, warned/blocked and accuracy all match; calibration shows real "Learning" state.
 
 ## Local setup
 

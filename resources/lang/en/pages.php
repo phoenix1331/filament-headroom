@@ -12,6 +12,15 @@ return [
         'navigation_label' => 'Requests',
         'empty' => 'No requests in this range',
         'counted' => ':method count',
+        'forget' => [
+            'label' => 'Forget a tag value',
+            'heading' => 'Forget a tag value',
+            'description' => 'Erases this tag value from every ledger entry and daily rollup, and gives affected agent runs new IDs so they no longer match your logs. Use it for data subject requests. This cannot be undone.',
+            'key' => 'Tag',
+            'value' => 'Value',
+            'submit' => 'Forget',
+            'done' => '{0} No entries carried :key with that value.|{1} Forgot :key on :count entry.|[2,*] Forgot :key on :count entries.',
+        ],
         'runs' => [
             'title' => 'Agent runs',
             'empty' => 'No agent runs in this range',

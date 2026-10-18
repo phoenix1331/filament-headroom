@@ -48,9 +48,11 @@ trait GroupsByRun
     }
 
     /**
+     * The header button that switches between requests and runs.
+     *
      * @return array<Action>
      */
-    protected function getHeaderActions(): array
+    protected function runToggleActions(): array
     {
         if ($this->isGroupedByRun()) {
             return [

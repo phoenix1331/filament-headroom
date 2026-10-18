@@ -90,6 +90,8 @@ class HeadroomPlugin implements Plugin
 
     protected ?Closure $tagLabelUsing = null;
 
+    protected bool|Closure $forgetTagsUsing = false;
+
     protected ?string $tenantTag = null;
 
     protected ?Closure $tenantValueUsing = null;
@@ -141,6 +143,35 @@ class HeadroomPlugin implements Plugin
     public static function ledger(): LedgerQuery
     {
         return static::current()?->scope(Ledger::query()) ?? Ledger::query();
+    }
+
+    /**
+     * Who may erase a context tag value from the ledger (a data subject
+     * request) from the Requests page. Off by default and separate from
+     * authorize(). The closure can take `$user` and must return true.
+     * Never available under tenant scoping: the ledger's forgetTag() is not
+     * tenant-scoped, so one tenant could erase another's data.
+     */
+    public function allowForgettingTags(bool|Closure $condition = true): static
+    {
+        $this->forgetTagsUsing = $condition;
+
+        return $this;
+    }
+
+    public function canForgetTags(?Authenticatable $user = null): bool
+    {
+        if ($this->tenantTag !== null || $this->forgetTagsUsing === false) {
+            return false;
+        }
+
+        $user ??= Filament::auth()->user();
+
+        return $this->evaluate(
+            $this->forgetTagsUsing,
+            namedInjections: ['user' => $user],
+            typedInjections: $user === null ? [] : [Authenticatable::class => $user, $user::class => $user],
+        ) === true;
     }
 
     /**

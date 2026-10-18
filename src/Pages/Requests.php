@@ -6,6 +6,7 @@ namespace Phoenix1331\FilamentHeadroom\Pages;
 
 use BackedEnum;
 use Carbon\CarbonImmutable;
+use Filament\Actions\Action;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\EmbeddedTable;
 use Filament\Schemas\Schema;
@@ -27,6 +28,7 @@ use Phoenix1331\FilamentHeadroom\Concerns\HasHeadroomNavigation;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
 use Phoenix1331\FilamentHeadroom\Enums\ValueBasis;
 use Phoenix1331\FilamentHeadroom\HeadroomPlugin;
+use Phoenix1331\FilamentHeadroom\Pages\Concerns\ForgetsTags;
 use Phoenix1331\FilamentHeadroom\Pages\Concerns\GroupsByRun;
 use Phoenix1331\FilamentHeadroom\Support\Cost;
 use Phoenix1331\FilamentHeadroom\Support\Format;
@@ -39,6 +41,7 @@ use Phoenix1331\FilamentHeadroom\Support\Outcomes;
 class Requests extends Page implements HasTable
 {
     use AuthorisesPageAccess;
+    use ForgetsTags;
     use GroupsByRun;
     use HasHeadroomNavigation;
     use InteractsWithTable;
@@ -74,6 +77,14 @@ class Requests extends Page implements HasTable
         }
 
         return __('filament-headroom::pages.requests.title');
+    }
+
+    /**
+     * @return array<Action>
+     */
+    protected function getHeaderActions(): array
+    {
+        return [...$this->runToggleActions(), $this->forgetTagAction()];
     }
 
     public function content(Schema $schema): Schema

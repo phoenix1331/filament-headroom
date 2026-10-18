@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - "Group by run" on the Requests page (`?group=run`): one row per agent run with steps, reported tokens, peak context, cost and how many steps warned, blocked or failed, under the same filters, ordered by most recent activity or any total.
 - Request detail page (`/headroom/requests/{requestId}`), opened from any row: outcome and reason, counted and answering models (failover shown), count method, timing, tags through `tagLabel()`, estimated against reported input with the error, output and cache tokens, context used, per-part input breakdown, reported cost beside the labelled pre-flight estimate, and for agent runs every step with its context growth. Registered whenever the Requests page is.
 - `scopeToTenant($tag, $value = null)` plugin option: on tenant panels, every page, widget, filter option, run and detail view reads only the current tenant's ledger entries, through a ledger context tag holding the tenant key (or a value mapped from the tenant). With no current tenant nothing matches.
+- `allowForgettingTags($condition)` plugin option and a "Forget a tag value" action on the Requests page for data subject requests: erases one context tag value through the ledger's `forgetTag()` after confirmation. Off by default, authorised separately from the dashboard, and never available under tenant scoping because the ledger erases the value across every tenant.
 - Plugin stylesheet (`filament-headroom`), published with `php artisan filament:assets`.
 
 ### Changed
