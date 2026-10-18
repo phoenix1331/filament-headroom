@@ -55,6 +55,15 @@ describe('panel with the plugin', function (): void {
         livewire($widget)->assertOk();
     })->with('widgets');
 
+    it('refuses later requests once access is revoked', function (string $widget): void {
+        HeadroomPlugin::get()->authorize(true);
+        $component = livewire($widget)->assertOk();
+
+        HeadroomPlugin::get()->authorize(false);
+
+        $component->call('$refresh')->assertForbidden();
+    })->with('widgets');
+
     it('hides widgets disabled through widgets()', function (string $widget): void {
         HeadroomPlugin::get()->authorize(true)->widgets(array_values(array_diff(HeadroomPlugin::WIDGETS, [$widget])));
 

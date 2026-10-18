@@ -55,7 +55,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | `authorize()` callback must return exactly `true` | Truthy values (`1`, `'yes'`) deny, so a sloppy callback fails closed |
 | Navigation sort is a base plus each page's own `$navigationSort` | One option moves the whole Headroom block while keeping page order; an icon can be set for all pages or per page |
 | Every page and widget gets its range through `Range::resolve()` | One place for the allowed ranges, their labels and the plugin default; invalid `defaultRange()` strings throw when set, not when a page renders |
-| Filament checks `canView()` on widget mount | A widget the user may not see returns 403 even when mounted directly, so `AuthorisesWidgetView` protects data, not just layout |
+| `AuthorisesWidgetView` aborts 403 on mount and every hydrate when `canView()` is false | Protects widget data even when mounted directly or after access is revoked. Filament 5.10 checks on mount itself, but older Filament 5 releases (CI prefer-lowest) do not, so the plugin enforces it |
 | Chart options are `RawJs` with every literal from `Js::from()` | Filament renders chart options inside an HTML attribute; a `"` from `json_encode()` ends it and prints the JS as text. A test asserts the options contain no double quote |
 | Token charts show reported tokens only | `TokenTotals` input/output cover only requests that reported usage, and the ledger cannot split estimate-only input per group; mixing in `estimatedInput` would double count |
 | Tables over ledger data use array records | Filament tables take `->records(fn () => [...])` with a `key` per row; `assertCountTableRecords()` needs an Eloquent query, so tests assert visible records instead |
