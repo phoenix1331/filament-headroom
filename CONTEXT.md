@@ -63,7 +63,7 @@ Only `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php` and the
 - PHP 8.4 in WSL with `intl` (`sudo apt install php8.4-intl`) and `pcov` for coverage
 - `osv-scanner` on the PATH (`go install github.com/google/osv-scanner/cmd/osv-scanner@latest`) for the pre-commit hook
 - `npm install` once to activate the Husky hooks
-- `composer install`, then the composer scripts (`lint`, `analyse`, `test`, `test:coverage`, `check`)
+- `composer install`, then the composer scripts (`lint`, `lint:test`, `analyse`, `test`, `test:coverage`, `check`). `check` runs `lint:test`, `analyse` and `test:coverage` and is the pre-push gate
 - `composer.lock` is gitignored, as for any library
 
 ### Working against a local ledger checkout

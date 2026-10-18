@@ -52,6 +52,26 @@
             ]
         }
     },
+    "scripts": {
+        "lint": "pint",
+        "lint:test": "pint --test",
+        "analyse": "phpstan analyse --memory-limit=1G",
+        "test": "pest",
+        "test:coverage": "pest --coverage --min=90",
+        "check": [
+            "@lint:test",
+            "@analyse",
+            "@test:coverage"
+        ]
+    },
+    "scripts-descriptions": {
+        "lint": "Fix code style with Pint",
+        "lint:test": "Check code style with Pint without changing files",
+        "analyse": "Run Larastan at max level over src/",
+        "test": "Run the Pest suite",
+        "test:coverage": "Run the Pest suite with the 90% coverage gate on src/",
+        "check": "Run style check, static analysis and coverage gate"
+    },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
