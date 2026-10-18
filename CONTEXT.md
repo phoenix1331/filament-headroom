@@ -72,6 +72,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | Plugin markup uses its own `fi-headroom-*` CSS, never Tailwind utilities | Filament's compiled CSS only contains the utilities Filament itself uses; a test keeps the stylesheet to `fi-headroom-` selectors |
 | Tables over ledger data use array records | Filament tables take `->records(fn () => [...])` with a `key` per row; `assertCountTableRecords()` needs an Eloquent query, so tests assert visible records instead |
 | Per-point charts bucket the range (`Range::bucketDays()`: 1 / 3 / 7) | Smooths noisy daily accuracy; a test caps the accuracy chart at 3 queries for any range |
+| No Dependabot; dependencies are updated by hand | Matches the Headroom and Ledger repos, and its `chore(deps):` titles break the no-scope commit rule |
 | Run view pages runs in PHP | The ledger has no run pagination (proposed L3); it costs one grouped query per total plus one `run()` per visible row |
 | Spend over time costs one query per drawn series | The ledger has no two-level grouping (day x model); proposed as L1 in the ledger's `TASKS-2.md` |
 | Trends compare one currency only | Different currencies are never added or compared; multi-currency spend shows each amount with no trend or sparkline |
@@ -127,7 +128,6 @@ Seed through `testbench.yaml` `seeders:` only. Adding `--seed` to the `migrate-f
 | `.github/workflows/tests.yml` | `pint --test` \| matrix PHP 8.3/8.4/8.5 x Laravel 12/13 x prefer-lowest/prefer-stable \| coverage (pcov, `--min=90`, `shell: bash` for `tee`) \| dist archive check |
 | `.github/workflows/static-analysis.yml` | Larastan with GitHub annotations |
 | `.github/workflows/release.yml` | On `v*.*.*` tags: release notes from the matching `## [x.y.z]` section of `CHANGELOG.md`, fails if missing |
-| `.github/dependabot.yml` | Composer weekly (dev grouped), npm monthly, Actions weekly (grouped) |
 
 `.github/scripts/check-archive.sh` allows only `LICENSE`, `README.md`, `composer.json`, `src/`, `resources/`, `config/`, `database/` in `git archive`; extend it alongside `.gitattributes` when a new shipped directory appears. Lowest cell verified locally: Laravel 12.62, Testbench 10.6, Pest 4.3, Filament 5.0.
 
