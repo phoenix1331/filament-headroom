@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -24,7 +24,7 @@ jobs:
           extensions: intl
           coverage: none
 
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
 
       - name: check code style
         run: vendor/bin/pint --test
@@ -43,7 +43,7 @@ jobs:
         stability: [prefer-lowest, prefer-stable]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -65,7 +65,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -73,7 +73,7 @@ jobs:
           extensions: intl, pdo_sqlite
           coverage: pcov
 
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
 
       - name: run tests with the coverage gate
         shell: bash
@@ -85,7 +85,7 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: check archive contents
         run: sh .github/scripts/check-archive.sh
