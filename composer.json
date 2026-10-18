@@ -42,7 +42,10 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phoenix1331\\FilamentHeadroom\\Tests\\": "tests/"
+            "Phoenix1331\\FilamentHeadroom\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
         }
     },
     "extra": {
@@ -53,6 +56,18 @@
         }
     },
     "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
         "lint": "pint",
         "lint:test": "pint --test",
         "analyse": "phpstan analyse --memory-limit=1G",
@@ -70,7 +85,11 @@
         "analyse": "Run Larastan at max level over src/",
         "test": "Run the Pest suite",
         "test:coverage": "Run the Pest suite with the 90% coverage gate on src/",
-        "check": "Run style check, static analysis and coverage gate"
+        "check": "Run style check, static analysis and coverage gate",
+        "clear": "Reset the Testbench skeleton",
+        "prepare": "Discover package providers in the Testbench skeleton",
+        "build": "Build the workbench: publish assets, migrate and seed demo data",
+        "serve": "Build the workbench and serve the demo panel"
     },
     "config": {
         "sort-packages": true,

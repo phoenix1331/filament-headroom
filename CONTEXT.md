@@ -26,7 +26,7 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `workbench/` | Testbench workbench: Filament panel using the plugin, ledger migrations, seeder built on `LedgerEntryFactory`. Export-ignored |
 | `docs/` | GitHub Pages site and screenshots. Export-ignored |
 
-Only `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php` and the `tests/` scaffolding exist so far. Treat the rest of the table as the target layout.
+Only `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php`, the `tests/` scaffolding and the workbench exist so far. Treat the rest of the table as the target layout.
 
 ## Decisions
 
@@ -57,6 +57,19 @@ Only `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php` and the
 | `orchestra/testbench` (dev) | `^11.3` | Boots Laravel for Larastan, Pest and the workbench |
 | `pestphp/pest` + `pest-plugin-laravel` + `pest-plugin-livewire` (dev) | `^5.3`, `^5.0`, `^5.0` | Tests, arch tests, `livewire()` helper for pages and widgets. `allow-plugins.pestphp/pest-plugin` enabled |
 | `husky` (npm dev) | `^9.1.7` | Tracked `.husky/` hooks: `commit-msg` (lowercase conventional commits, no scopes), `pre-commit` (`pint --test`, `osv-scanner --lockfile=composer.lock`). POSIX `sh` only |
+
+## Workbench
+
+| Piece | Detail |
+|---|---|
+| Commands | `composer build` (publish Filament assets, recreate SQLite, migrate, seed) \| `composer serve` (build, then `testbench serve` on port 8000) |
+| Login | `/_workbench` auto-logs in as `demo@example.com` (password `password`) and lands on `/admin` |
+| Panel | `workbench/app/Providers/Filament/AdminPanelProvider.php`: default `admin` panel, Filament Dashboard + `AccountWidget`, `HeadroomPlugin::make()` |
+| Migrations | Testbench defaults plus `vendor/phoenix1331/laravel-ai-headroom-ledger/database/migrations` via `testbench.yaml` (the ledger provider only publishes them) |
+| Seeder | `workbench/database/seeders/DatabaseSeeder.php`: 90 days x 3 tenants (`tenant_id` acme/globex/initech, `feature` tag) built on `LedgerEntryFactory`, every outcome, streamed, abandoned, failover, approximate cost, multi-step runs, then `headroom-ledger:rollup --from` |
+| Database | `vendor/orchestra/testbench-core/laravel/database/database.sqlite` (rebuilt on every `composer build`) |
+
+Seed through `testbench.yaml` `seeders:` only. Adding `--seed` to the `migrate-fresh` build step runs the seeder twice and fails on the unique user email.
 
 ## Local setup
 
