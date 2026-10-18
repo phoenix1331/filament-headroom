@@ -39,6 +39,7 @@ Only `src/HeadroomPlugin.php` and `src/FilamentHeadroomServiceProvider.php` exis
 | Require Headroom directly, not just via the ledger | The plugin uses Headroom enums such as `CountMethod` |
 | No Docker, FrankenPHP, Makefile or MySQL | Package development only: PHP and Composer in WSL, Testbench on SQLite. Overrides the default stack in `.claude/rules/RULES.md` |
 | Siblings from Packagist, not path repositories | Both are published at v0.1.0, and `../` paths would break CI. See local ledger changes below |
+| No PHPStan baseline, no inline `@var` overrides | Types are narrowed with runtime guards (e.g. `HeadroomPlugin::ensureInstance()`), so max level holds without suppressions |
 | Core stays free and MIT | It is the shop window for the family; any paid features go in a separate add-on package |
 
 ## Dependencies and constraints
@@ -51,6 +52,8 @@ Only `src/HeadroomPlugin.php` and `src/FilamentHeadroomServiceProvider.php` exis
 | `phoenix1331/laravel-ai-headroom` | `^0.1` | Enums used directly |
 | `phoenix1331/laravel-ai-headroom-ledger` | `^0.1` | Query API, `LedgerEntryFactory` for seeding |
 | `laravel/pint` (dev) | `^1.32` | Code style; `pint.json` uses the `laravel` preset plus `declare_strict_types` |
+| `larastan/larastan` (dev) | `^3.13` | PHPStan at `level: max` over `src/` (`phpstan.neon`, cache in `build/phpstan`) |
+| `orchestra/testbench` (dev) | `^11.3` | Boots Laravel for Larastan, Pest and the workbench |
 | `husky` (npm dev) | `^9.1.7` | Tracked `.husky/` hooks: `commit-msg` (lowercase conventional commits, no scopes), `pre-commit` (`pint --test`, `osv-scanner --lockfile=composer.lock`). POSIX `sh` only |
 
 ## Local setup

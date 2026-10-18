@@ -53,7 +53,8 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require-dev": {
-        "larastan/larastan": "*",
-        "laravel/pint": "^1.32"
+        "larastan/larastan": "^3.13",
+        "laravel/pint": "^1.32",
+        "orchestra/testbench": "^11.3"
     }
 }

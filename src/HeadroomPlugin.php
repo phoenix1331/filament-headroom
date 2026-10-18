@@ -6,6 +6,7 @@ namespace Phoenix1331\FilamentHeadroom;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use LogicException;
 
 class HeadroomPlugin implements Plugin
 {
@@ -13,15 +14,12 @@ class HeadroomPlugin implements Plugin
 
     public static function make(): static
     {
-        return app(static::class);
+        return self::ensureInstance(app(static::class));
     }
 
     public static function get(): static
     {
-        /** @var static $plugin */
-        $plugin = filament(app(static::class)->getId());
-
-        return $plugin;
+        return self::ensureInstance(filament(self::ID));
     }
 
     public function getId(): string
@@ -37,5 +35,14 @@ class HeadroomPlugin implements Plugin
     public function boot(Panel $panel): void
     {
         //
+    }
+
+    private static function ensureInstance(mixed $plugin): static
+    {
+        if (! $plugin instanceof static) {
+            throw new LogicException('Plugin ['.self::ID.'] is not an instance of '.static::class.'.');
+        }
+
+        return $plugin;
     }
 }
