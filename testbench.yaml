@@ -17,7 +17,7 @@ seeders:
   - Workbench\Database\Seeders\DatabaseSeeder
 
 workbench:
-  start: '/admin'
+  start: '/admin/headroom'
   user: demo@example.com
   install: true
   health: false

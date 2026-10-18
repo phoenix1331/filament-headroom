@@ -21,5 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Estimate accuracy widget: weighted error between Headroom's estimates and reported input tokens per model over time, filterable by count method, with gaps where no requests reported usage.
 - Blocked, warned and failed widget: the latest ten such requests in the range with outcome badges and readable reasons (limit type, or exception and HTTP status).
 - Every widget works on an app's own Filament dashboards, following the plugin's authorisation and enabled widgets, or the local-only default on panels without the plugin. `RangeSelect::make()` adds the range picker to any dashboard's filters form.
+- Overview page at `/headroom` (titled "AI usage") with the range picker and every enabled widget, leaving the panel's own dashboard untouched.
 
 [Unreleased]: https://github.com/phoenix1331/filament-headroom/commits/main

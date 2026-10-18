@@ -17,6 +17,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use InvalidArgumentException;
 use LogicException;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
+use Phoenix1331\FilamentHeadroom\Pages\Overview;
 use Phoenix1331\FilamentHeadroom\Widgets\BlockedWarnedFailed;
 use Phoenix1331\FilamentHeadroom\Widgets\ContextHeadroom;
 use Phoenix1331\FilamentHeadroom\Widgets\EstimateAccuracy;
@@ -36,7 +37,9 @@ class HeadroomPlugin implements Plugin
      *
      * @var list<class-string<Page>>
      */
-    public const array PAGES = [];
+    public const array PAGES = [
+        Overview::class,
+    ];
 
     /**
      * Widgets enabled when widgets() is not called.
