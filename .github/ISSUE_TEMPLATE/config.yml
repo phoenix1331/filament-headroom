@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/phoenix1331/filament-headroom/security/advisories/new
+    about: Please report security issues privately, never in a public issue.
+  - name: Headroom Ledger issues
+    url: https://github.com/phoenix1331/laravel-ai-headroom-ledger/issues
+    about: Problems with recording, rollups or the ledger query API belong in the ledger repository.

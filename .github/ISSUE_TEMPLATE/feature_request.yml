@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest a widget, page, filter or plugin option.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: What you are trying to see or decide from the dashboard today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How it could look or work.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: ledger
+    attributes:
+      label: Data
+      options:
+        - label: This needs data the ledger query API does not expose yet

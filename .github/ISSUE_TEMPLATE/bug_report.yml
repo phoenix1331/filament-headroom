@@ -1,0 +1,62 @@
+name: Bug report
+description: Something in the dashboard is broken or shows the wrong figures.
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The page or widget, the range and filters selected, and any plugin options set on the panel.
+      placeholder: |
+        1. Open the Requests page
+        2. Filter by ...
+    validations:
+      required: true
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Package version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: ledger-version
+    attributes:
+      label: Headroom Ledger version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: filament-version
+    attributes:
+      label: Filament version
+      placeholder: 5.10.2
+    validations:
+      required: true
+  - type: input
+    id: laravel-version
+    attributes:
+      label: Laravel and PHP versions
+      placeholder: Laravel 13.37, PHP 8.4
+    validations:
+      required: true
+  - type: dropdown
+    id: database
+    attributes:
+      label: Database
+      options: [SQLite, MySQL, MariaDB, PostgreSQL]
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error output
+      description: Stack trace or log lines, if any. Remove tenant names and other personal data first.
+      render: shell
