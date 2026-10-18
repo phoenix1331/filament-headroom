@@ -45,7 +45,7 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `resources/dist/filament-headroom.css` | `fi-headroom-*` classes on Filament colour variables, registered with `FilamentAsset` (`filament:assets` publishes it) |
 | `src/Pages/Concerns/ForgetsTags.php` | Requests header action calling `Ledger::forgetTag()` (key from the allowlist, value, confirmation); visible and authorised only when `allowForgettingTags()` returns exactly true, the allowlist is not empty and tenant scoping is off |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
-| `resources/lang/en/` | Every user-facing string |
+| `resources/lang/en/` | Every user-facing string; published with the `filament-headroom-translations` tag. `tests/Feature/TranslationsTest.php` fails on literal labels in `src/`, literal text in views, or a used key missing from `en` (runtime-built keys are expanded per enum case) |
 | `resources/views/` | Blade views where Filament components are not enough |
 | `tests/` | Pest + Testbench with a Filament panel registered; arch tests enforce the data access rule. `tests/Concerns/WithLedgerDatabase.php` migrates the ledger tables for tests that need data; `tests/Fixtures/` holds pages and widgets that exercise the concerns |
 | `workbench/` | Testbench workbench: Filament panel using the plugin, ledger migrations, seeder built on `LedgerEntryFactory`. Export-ignored |

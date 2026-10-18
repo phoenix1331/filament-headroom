@@ -309,7 +309,7 @@ class RequestDetail extends Page
         $labels = [];
 
         foreach ($entry->tags as $key => $value) {
-            $labels[] = $plugin?->getTagLabel($key, $value) ?? "{$key}: {$value}";
+            $labels[] = $plugin?->getTagLabel($key, $value) ?? __('filament-headroom::tags.label', ['key' => $key, 'value' => $value]);
         }
 
         return $labels;

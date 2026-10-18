@@ -13,6 +13,9 @@ class FilamentHeadroomServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'filament-headroom');
+        $this->publishes([
+            __DIR__.'/../resources/lang' => $this->app->langPath('vendor/filament-headroom'),
+        ], 'filament-headroom-translations');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'filament-headroom');
 
         // Published with `php artisan filament:assets`, like Filament's own.
