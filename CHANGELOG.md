@@ -13,5 +13,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `defaultRange()` plugin option (`7d`, `30d` or `90d`, default `30d`) and the `Range` enum shared by every page and widget.
 - `tagLabel()` plugin option to control how ledger tags are shown, for example a tenant name instead of its ID.
 - `pages()` and `widgets()` plugin options to disable built-in parts or swap in subclasses. Disabled pages are not registered and disabled widgets stay hidden on every dashboard of the panel.
+- Cost labelling shared by every page and widget: amounts per currency (four decimals below one cent, never converted), with an "Estimate", "Includes estimates" or "Approximate" badge and explanation whenever a figure is not billed cost. Available as the `<x-filament-headroom::cost>` component.
 
 [Unreleased]: https://github.com/phoenix1331/filament-headroom/commits/main

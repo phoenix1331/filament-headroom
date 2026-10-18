@@ -20,6 +20,8 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/FilamentHeadroomServiceProvider.php` | Auto-discovered; loads translations and views under the `filament-headroom` namespace |
 | `src/Concerns/` | `AuthorisesPageAccess` (`canAccess()`) and `AuthorisesWidgetView` (`canView()`), both delegating to `HeadroomPlugin::allows()`; every Headroom page and widget uses one. `HasHeadroomNavigation` reads group, icon and sort from the plugin on every page |
 | `src/Enums/Range.php` | `7d` / `30d` / `90d`: labels, `between()` (inclusive days ending today), `apply(LedgerQuery)`, `resolve($state)` falling back to the plugin's `defaultRange()` |
+| `src/Support/Cost.php` + `src/Enums/ValueBasis.php` | Every cost goes through `Cost::fromMoney()` / `fromSpend()` / `fromSummary()`: formatted per currency, with a basis (Reported, Estimated, IncludesEstimates, Approximate) that carries badge label, tooltip and colour |
+| `resources/views/components/cost.blade.php` | `<x-filament-headroom::cost :cost="$cost" />`: amount plus Filament badge unless the basis is Reported |
 | `src/Pages/` | Overview, Requests (table, filters, run grouping, detail view, GDPR action), Models |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
@@ -36,7 +38,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 |---|---|
 | Read the ledger only through its public query API (`Ledger` facade, `LedgerQuery`, `GroupedQuery`, `Data` value objects) | The ledger's models and tables are `@internal`. Enforced by a Pest arch test: no `DB::table`, no imports of `Phoenix1331\AiHeadroomLedger\Models` |
 | Missing query capability goes back to the ledger as a proposed change | The ledger stays on 0.x until this plugin works; changing it is cheaper than coupling to its schema |
-| Never present an estimate as billed cost | Ledger `Money` carries `estimated` and `approximate` flags; every widget and page labels them |
+| Never present an estimate as billed cost | Ledger `Money` carries `estimated` and `approximate` flags; every widget and page shows them through `Cost` and `ValueBasis`. Estimate outranks approximate. `SpendSummary` decides wholly estimated (no usage reported) vs includes estimates. Plain-text contexts (chart tooltips) use `Cost::label()`: "$1.24 (estimate)" |
 | Default deny outside `local` | Same as Horizon and Pulse, so the dashboard is never accidentally public |
 | `authorize()` callback must return exactly `true` | Truthy values (`1`, `'yes'`) deny, so a sloppy callback fails closed |
 | Navigation sort is a base plus each page's own `$navigationSort` | One option moves the whole Headroom block while keeping page order; an icon can be set for all pages or per page |
