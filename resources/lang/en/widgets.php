@@ -75,4 +75,24 @@ return [
             'context' => 'Context used',
         ],
     ],
+
+    'models_table' => [
+        'heading' => 'Models',
+        'description' => 'Spend and context group by the model that answered; estimate error and calibration by the model that was counted. Bias is positive when estimates ran low.',
+        'empty' => 'No requests in this range',
+        'unknown_model' => 'Unknown model',
+        'samples' => '{1} :count sample|[2,*] :count samples',
+        'peak' => 'peak :percent',
+        'bias' => 'bias :percent',
+        'columns' => [
+            'model' => 'Model',
+            'requests' => 'Requests',
+            'spend' => 'Spend',
+            'average_context' => 'Avg context',
+            'blocked' => 'Blocked',
+            'warned' => 'Warned',
+            'error' => 'Estimate error',
+            'calibration' => 'Calibration',
+        ],
+    ],
 ];

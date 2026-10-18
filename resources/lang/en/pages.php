@@ -7,4 +7,8 @@ return [
         'title' => 'AI usage',
         'navigation_label' => 'Overview',
     ],
+    'models' => [
+        'title' => 'Models',
+        'navigation_label' => 'Models',
+    ],
 ];

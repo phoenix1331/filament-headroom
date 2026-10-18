@@ -33,8 +33,11 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Support/Outcomes.php` | Outcome label and badge colour; `reason()` turns a `LimitType` value or `ExceptionClass:status` into words |
 | `src/Support/RangeSelect.php` | `Select` for a dashboard's filters form under the `range` key (`RangeSelect::NAME`) that `QueriesLedger` reads; default from the plugin |
 | `src/Support/ChartPalette.php` | Six categorical slots + neutral "Other", light and dark, validated with the dataviz palette validator on `#ffffff` / `#18181b`; a Chart.js scriptable picks the mode at draw time. Slots go by series name, not rank |
-| `src/Pages/Overview.php` | Extends Filament's `Dashboard` (filters form + widget grid) at `$routePath = 'headroom'`; `RangeSelect` filter; widgets from the plugin's enabled list |
-| `src/Pages/` | Still to come: Requests (table, filters, run grouping, detail view, GDPR action; needs ledger 0.1.1), Models |
+| `src/Pages/HeadroomPage.php` | Abstract base: extends Filament's `Dashboard` (filters form + widget grid) with page access, plugin navigation and `RangeSelect`; each page sets its own `$routePath` so the panel dashboard is untouched |
+| `src/Pages/Overview.php` | `headroom`: every enabled widget |
+| `src/Pages/Models.php` + `src/Widgets/ModelsTable.php` | `headroom/models`: one row per model (array records, sorted in PHP); not in `WIDGETS`, so `canView()` is authorisation only. Peak context and bias show as column descriptions to keep the table narrow |
+| `src/Support/CalibrationStatus.php` | Headroom `Calibrator::correctionFor()` / `store()->get()` plus `ai-headroom.calibration` config: off, none, learning (n of min samples), active (factor, margin) |
+| `src/Pages/` | Still to come: Requests (table, filters, run grouping, detail view, GDPR action; needs ledger 0.1.1) |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
 | `resources/views/` | Blade views where Filament components are not enough |
@@ -58,6 +61,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | `AuthorisesWidgetView` aborts 403 on mount and every hydrate when `canView()` is false | Protects widget data even when mounted directly or after access is revoked. Filament 5.10 checks on mount itself, but older Filament 5 releases (CI prefer-lowest) do not, so the plugin enforces it |
 | Chart options are `RawJs` with every literal from `Js::from()` | Filament renders chart options inside an HTML attribute; a `"` from `json_encode()` ends it and prints the JS as text. A test asserts the options contain no double quote |
 | Token charts show reported tokens only | `TokenTotals` input/output cover only requests that reported usage, and the ledger cannot split estimate-only input per group; mixing in `estimatedInput` would double count |
+| Tests use the array cache (`phpunit.xml` `CACHE_STORE=array`) | Headroom keeps calibration in the cache; Testbench's default database cache has no table in the test database |
 | Tables over ledger data use array records | Filament tables take `->records(fn () => [...])` with a `key` per row; `assertCountTableRecords()` needs an Eloquent query, so tests assert visible records instead |
 | Per-point charts bucket the range (`Range::bucketDays()`: 1 / 3 / 7) | Caps per-point queries at 13 for 90 days and smooths noisy daily accuracy |
 | Spend over time costs one query per drawn series | The ledger has no two-level grouping (day x model); proposed as L1 in the ledger's `TASKS-2.md` |
