@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Phoenix1331\FilamentHeadroom;
 
+use BackedEnum;
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Facades\Filament;
+use Filament\Pages\Page;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Support\Htmlable;
+use InvalidArgumentException;
 use LogicException;
+use UnitEnum;
 
 class HeadroomPlugin implements Plugin
 {
@@ -19,6 +24,17 @@ class HeadroomPlugin implements Plugin
     public const ID = 'headroom';
 
     protected bool|Closure|null $authorizeUsing = null;
+
+    protected string|UnitEnum|Closure|null $navigationGroup = null;
+
+    protected bool $hasNavigationGroup = false;
+
+    protected string|BackedEnum|Htmlable|Closure|null $navigationIcon = null;
+
+    /** @var array<class-string<Page>, string|BackedEnum|Htmlable|Closure> */
+    protected array $pageNavigationIcons = [];
+
+    protected int|Closure|null $navigationSort = null;
 
     public static function make(): static
     {
@@ -83,6 +99,88 @@ class HeadroomPlugin implements Plugin
             namedInjections: ['user' => $user],
             typedInjections: $user === null ? [] : [Authenticatable::class => $user, $user::class => $user],
         ) === true;
+    }
+
+    /**
+     * The navigation group for every Headroom page. Defaults to "Headroom"
+     * (translated); null lists the pages ungrouped.
+     */
+    public function navigationGroup(string|UnitEnum|Closure|null $group): static
+    {
+        $this->navigationGroup = $group;
+        $this->hasNavigationGroup = true;
+
+        return $this;
+    }
+
+    public function getNavigationGroup(): string|UnitEnum|null
+    {
+        if (! $this->hasNavigationGroup) {
+            return __('filament-headroom::navigation.group');
+        }
+
+        $group = $this->evaluate($this->navigationGroup);
+
+        if ($group === null || is_string($group) || $group instanceof UnitEnum) {
+            return $group;
+        }
+
+        throw new InvalidArgumentException('The Headroom navigation group must resolve to a string, an enum or null, '.get_debug_type($group).' given.');
+    }
+
+    /**
+     * The navigation icon for every Headroom page, or for one page when
+     * $page is given. Pages keep their own icons when neither is set.
+     *
+     * @param  class-string<Page>|null  $page
+     */
+    public function navigationIcon(string|BackedEnum|Htmlable|Closure $icon, ?string $page = null): static
+    {
+        if ($page === null) {
+            $this->navigationIcon = $icon;
+
+            return $this;
+        }
+
+        $this->pageNavigationIcons[$page] = $icon;
+
+        return $this;
+    }
+
+    /**
+     * @param  class-string<Page>  $page
+     */
+    public function getNavigationIcon(string $page): string|BackedEnum|Htmlable|null
+    {
+        $icon = $this->evaluate($this->pageNavigationIcons[$page] ?? $this->navigationIcon);
+
+        if ($icon === null || is_string($icon) || $icon instanceof BackedEnum || $icon instanceof Htmlable) {
+            return $icon;
+        }
+
+        throw new InvalidArgumentException('A Headroom navigation icon must resolve to a string, an enum or Htmlable, '.get_debug_type($icon).' given.');
+    }
+
+    /**
+     * Where the block of Headroom pages sits in the navigation. Each page's
+     * own sort becomes its position within the block.
+     */
+    public function navigationSort(int|Closure|null $sort): static
+    {
+        $this->navigationSort = $sort;
+
+        return $this;
+    }
+
+    public function getNavigationSort(): ?int
+    {
+        $sort = $this->evaluate($this->navigationSort);
+
+        if ($sort === null || is_int($sort)) {
+            return $sort;
+        }
+
+        throw new InvalidArgumentException('The Headroom navigation sort must resolve to an integer or null, '.get_debug_type($sort).' given.');
     }
 
     public function register(Panel $panel): void

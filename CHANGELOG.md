@@ -9,5 +9,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - `HeadroomPlugin::authorize()` to control who sees the dashboard, with a closure (receiving `$user`) or a boolean. Access is denied outside the `local` environment by default.
+- `navigationGroup()`, `navigationIcon()` (for every page, or one page) and `navigationSort()` plugin options. Pages are grouped under "Headroom" by default.
 
 [Unreleased]: https://github.com/phoenix1331/filament-headroom/commits/main

@@ -18,7 +18,7 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 |---|---|
 | `src/HeadroomPlugin.php` | Filament `Plugin` (ID `headroom`): `make()`, `get()`, fluent options, registers pages and widgets on the panel |
 | `src/FilamentHeadroomServiceProvider.php` | Auto-discovered; loads translations and views under the `filament-headroom` namespace |
-| `src/Concerns/` | `AuthorisesPageAccess` (`canAccess()`) and `AuthorisesWidgetView` (`canView()`), both delegating to `HeadroomPlugin::allows()`; every Headroom page and widget uses one |
+| `src/Concerns/` | `AuthorisesPageAccess` (`canAccess()`) and `AuthorisesWidgetView` (`canView()`), both delegating to `HeadroomPlugin::allows()`; every Headroom page and widget uses one. `HasHeadroomNavigation` reads group, icon and sort from the plugin on every page |
 | `src/Pages/` | Overview, Requests (table, filters, run grouping, detail view, GDPR action), Models |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
@@ -38,6 +38,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | Never present an estimate as billed cost | Ledger `Money` carries `estimated` and `approximate` flags; every widget and page labels them |
 | Default deny outside `local` | Same as Horizon and Pulse, so the dashboard is never accidentally public |
 | `authorize()` callback must return exactly `true` | Truthy values (`1`, `'yes'`) deny, so a sloppy callback fails closed |
+| Navigation sort is a base plus each page's own `$navigationSort` | One option moves the whole Headroom block while keeping page order; an icon can be set for all pages or per page |
 | `HeadroomPlugin::current()` returns null on panels without the plugin | Widgets on host dashboards still get the local-only default instead of throwing |
 | Require Headroom directly, not just via the ledger | The plugin uses Headroom enums such as `CountMethod` |
 | No Docker, FrankenPHP, Makefile or MySQL | Package development only: PHP and Composer in WSL, Testbench on SQLite. Overrides the default stack in `.claude/rules/RULES.md` |
