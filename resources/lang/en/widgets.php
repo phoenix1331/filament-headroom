@@ -55,11 +55,6 @@ return [
         'empty' => 'No requests in this range reported usage from the model that was counted.',
         'all_methods' => 'All count methods',
         'samples' => 'samples',
-        'methods' => [
-            'native' => 'Native',
-            'estimated' => 'Estimated',
-            'calibrated' => 'Calibrated',
-        ],
     ],
 
     'blocked_warned_failed' => [

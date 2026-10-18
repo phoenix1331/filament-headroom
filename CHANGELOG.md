@@ -23,5 +23,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Every widget works on an app's own Filament dashboards, following the plugin's authorisation and enabled widgets, or the local-only default on panels without the plugin. `RangeSelect::make()` adds the range picker to any dashboard's filters form.
 - Overview page at `/headroom` (titled "AI usage") with the range picker and every enabled widget, leaving the panel's own dashboard untouched.
 - Models page at `/headroom/models`: per-model requests, spend (labelled), average and peak context, blocked and warned counts, estimate error and bias, and Headroom calibration status (off, no data yet, learning, or active with its correction).
+- Requests page at `/headroom/requests`: every ledger entry in a read-only table, paginated and sorted by the ledger (time, input and output tokens, context used, cost), with estimated input and cost labelled.
+
+### Changed
+
+- Requires `phoenix1331/laravel-ai-headroom-ledger` ^0.1.1.
 
 [Unreleased]: https://github.com/phoenix1331/filament-headroom/commits/main

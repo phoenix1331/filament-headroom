@@ -21,6 +21,7 @@ use Phoenix1331\AiHeadroomLedger\Query\LedgerQuery;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
 use Phoenix1331\FilamentHeadroom\Pages\Models;
 use Phoenix1331\FilamentHeadroom\Pages\Overview;
+use Phoenix1331\FilamentHeadroom\Pages\Requests;
 use Phoenix1331\FilamentHeadroom\Widgets\BlockedWarnedFailed;
 use Phoenix1331\FilamentHeadroom\Widgets\ContextHeadroom;
 use Phoenix1331\FilamentHeadroom\Widgets\EstimateAccuracy;
@@ -42,6 +43,7 @@ class HeadroomPlugin implements Plugin
      */
     public const array PAGES = [
         Overview::class,
+        Requests::class,
         Models::class,
     ];
 

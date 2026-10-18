@@ -27,7 +27,7 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Widgets/StatsOverview.php` | Spend (trend vs previous period, sparkline, single currency only), requests, average/peak context, blocked, warned. No polling |
 | `src/Widgets/SpendOverTime.php` | Line chart per model/provider (filter), top `ChartPalette::slots()` series plus "Other" = daily total minus drawn series; largest currency drawn, others named |
 | `src/Widgets/TokensByAgent.php` | Stacked horizontal bars of reported input/output per agent (top `MAX_AGENTS`, rest folded); unreported requests counted in the description, never drawn |
-| `src/Widgets/ContextHeadroom.php` | Distribution of pre-flight percent used in `EDGES` buckets, each from `nearLimit($edge)->count()` differences (one raw count per edge; ledger L2 would make it one query). Closest-to-limit list waits for ledger 0.1.1 sorting |
+| `src/Widgets/ContextHeadroom.php` | Distribution of pre-flight percent used in `EDGES` buckets, each from `nearLimit($edge)->count()` differences (one raw count per edge; ledger L2 would make it one query). Closest-to-limit list can now use `orderBy(EntrySort::PercentUsed)` |
 | `src/Widgets/EstimateAccuracy.php` | `errorPercent()` per model per `Range::buckets()` point (1, 3 or 7 days) from one `byDay()->accuracy()` query merged per bucket; count method filter; null (gap) where a bucket has no samples |
 | `src/Widgets/BlockedWarnedFailed.php` | Table widget over array records (`key` = request ID) from `withOutcome(...)->entries(LIMIT)` |
 | `src/Support/Outcomes.php` | Outcome label and badge colour; `reason()` turns a `LimitType` value or `ExceptionClass:status` into words |
@@ -37,7 +37,8 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Pages/Overview.php` | `headroom`: every enabled widget |
 | `src/Pages/Models.php` + `src/Widgets/ModelsTable.php` | `headroom/models`: one row per model (array records, sorted in PHP); not in `WIDGETS`, so `canView()` is authorisation only. Peak context and bias show as column descriptions to keep the table narrow |
 | `src/Support/CalibrationStatus.php` | Headroom `Calibrator::correctionFor()` / `store()->get()` plus `ai-headroom.calibration` config: off, none, learning (n of min samples), active (factor, margin) |
-| `src/Pages/` | Still to come: Requests (table, filters, run grouping, detail view, GDPR action; needs ledger 0.1.1) |
+| `src/Pages/Requests.php` | `headroom/requests`: plain `Page` + `HasTable` with an `EmbeddedTable`; array records from `paginate()` wrapped in a `LengthAwarePaginator`; `SORTS` maps sortable columns to `EntrySort`. Range is the plugin default until the filters task |
+| `src/Pages/` | Still to come: Requests filters, run grouping, detail view, GDPR action |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
 | `resources/views/` | Blade views where Filament components are not enough |

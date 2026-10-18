@@ -67,7 +67,7 @@ class EstimateAccuracy extends ChartWidget
         $filters = [self::ALL_METHODS => __('filament-headroom::widgets.estimate_accuracy.all_methods')];
 
         foreach (CountMethod::cases() as $method) {
-            $filters[$method->value] = __("filament-headroom::widgets.estimate_accuracy.methods.{$method->value}");
+            $filters[$method->value] = __("filament-headroom::count_methods.{$method->value}");
         }
 
         return $filters;
