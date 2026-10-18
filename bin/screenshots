@@ -34,6 +34,21 @@ cd "$ROOT"
 vendor/bin/testbench serve --port="$PORT" > "$PROFILE/serve.log" 2>&1 &
 SERVER=$!
 
+directory_images() {
+    # Filament plugin directory images (JPEG, light theme) need the DevTools
+    # protocol, so they come from a small Node script.
+    if [ -n "$ONLY" ] && ! printf ' %s ' "$ONLY" | grep -q " plugin-directory "; then
+        return
+    fi
+
+    if ! command -v node > /dev/null 2>&1; then
+        echo "  skipped plugin-directory images: Node 22+ is required"
+        return
+    fi
+
+    node "$ROOT/bin/directory-images.mjs" "$BASE" "$OUT" "$(command -v "$CHROME")"
+}
+
 cleanup() {
     kill "$SERVER" 2> /dev/null || true
     pkill -f "php -S 127.0.0.1:$PORT" 2> /dev/null || true
@@ -91,17 +106,10 @@ for mode in light dark; do
     shoot "$mode" request-detail "/admin/headroom/requests/$STEP" 1500
     shoot "$mode" models /admin/headroom/models 700
 
-    if [ "$mode" = light ] && { [ -z "$ONLY" ] || printf ' %s ' "$ONLY" | grep -q " plugin-directory "; }; then
-        # Filament plugin directory listing: 16:9 at 2560x1440, light theme.
-        # shellcheck disable=SC2086
-        "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
-            --user-data-dir="$PROFILE/$mode" --virtual-time-budget=14000 $flags \
-            --force-device-scale-factor=2 --window-size=1280,720 \
-            --screenshot="$OUT/plugin-directory.png" "$BASE/admin/headroom" > /dev/null 2>&1
-        echo "  docs/screenshots/plugin-directory.png"
-    fi
-
     for widget in stats-overview:440 spend-over-time:530 tokens-by-agent:440 context-headroom:440 closest-to-limit:500 estimate-accuracy:530 blocked-warned-failed:780; do
         shoot "$mode" "widget-${widget%%:*}" "/admin/widget-preview?widget=${widget%%:*}" "${widget#*:}"
     done
 done
+
+echo "plugin directory:"
+directory_images
