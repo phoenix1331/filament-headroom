@@ -17,6 +17,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use InvalidArgumentException;
 use LogicException;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
+use Phoenix1331\FilamentHeadroom\Widgets\BlockedWarnedFailed;
 use Phoenix1331\FilamentHeadroom\Widgets\ContextHeadroom;
 use Phoenix1331\FilamentHeadroom\Widgets\EstimateAccuracy;
 use Phoenix1331\FilamentHeadroom\Widgets\SpendOverTime;
@@ -48,6 +49,7 @@ class HeadroomPlugin implements Plugin
         TokensByAgent::class,
         ContextHeadroom::class,
         EstimateAccuracy::class,
+        BlockedWarnedFailed::class,
     ];
 
     protected bool|Closure|null $authorizeUsing = null;

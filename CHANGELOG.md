@@ -19,5 +19,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Tokens by agent widget: reported input and output tokens per agent as stacked bars, busiest first, with requests that never reported usage counted in the description instead of drawn.
 - Context headroom widget: how much of the context window requests used, from pre-flight counts, in buckets up to 100%+ (did not fit), with the number at 90% or more called out.
 - Estimate accuracy widget: weighted error between Headroom's estimates and reported input tokens per model over time, filterable by count method, with gaps where no requests reported usage.
+- Blocked, warned and failed widget: the latest ten such requests in the range with outcome badges and readable reasons (limit type, or exception and HTTP status).
 
 [Unreleased]: https://github.com/phoenix1331/filament-headroom/commits/main

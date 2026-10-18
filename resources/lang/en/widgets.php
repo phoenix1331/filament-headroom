@@ -61,4 +61,18 @@ return [
             'calibrated' => 'Calibrated',
         ],
     ],
+
+    'blocked_warned_failed' => [
+        'heading' => 'Blocked, warned and failed',
+        'description' => 'The latest :count requests in this range that hit a limit or failed.',
+        'empty' => 'No blocked, warned or failed requests in this range',
+        'columns' => [
+            'when' => 'When',
+            'outcome' => 'Outcome',
+            'reason' => 'Reason',
+            'agent' => 'Agent',
+            'model' => 'Model',
+            'context' => 'Context used',
+        ],
+    ],
 ];

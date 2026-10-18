@@ -29,6 +29,8 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Widgets/TokensByAgent.php` | Stacked horizontal bars of reported input/output per agent (top `MAX_AGENTS`, rest folded); unreported requests counted in the description, never drawn |
 | `src/Widgets/ContextHeadroom.php` | Distribution of pre-flight percent used in `EDGES` buckets, each from `nearLimit($edge)->count()` differences (one raw count per edge; ledger L2 would make it one query). Closest-to-limit list waits for ledger 0.1.1 sorting |
 | `src/Widgets/EstimateAccuracy.php` | `errorPercent()` per model per `Range::buckets()` point (1, 3 or 7 days), count method filter, null (gap) where a bucket has no samples. One `accuracy()` per bucket until ledger `GroupedQuery::accuracy()` (gap 4) |
+| `src/Widgets/BlockedWarnedFailed.php` | Table widget over array records (`key` = request ID) from `withOutcome(...)->entries(LIMIT)` |
+| `src/Support/Outcomes.php` | Outcome label and badge colour; `reason()` turns a `LimitType` value or `ExceptionClass:status` into words |
 | `src/Support/ChartPalette.php` | Six categorical slots + neutral "Other", light and dark, validated with the dataviz palette validator on `#ffffff` / `#18181b`; a Chart.js scriptable picks the mode at draw time. Slots go by series name, not rank |
 | `src/Pages/` | Overview, Requests (table, filters, run grouping, detail view, GDPR action), Models |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
@@ -54,6 +56,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | Filament checks `canView()` on widget mount | A widget the user may not see returns 403 even when mounted directly, so `AuthorisesWidgetView` protects data, not just layout |
 | Chart options are `RawJs` with every literal from `Js::from()` | Filament renders chart options inside an HTML attribute; a `"` from `json_encode()` ends it and prints the JS as text. A test asserts the options contain no double quote |
 | Token charts show reported tokens only | `TokenTotals` input/output cover only requests that reported usage, and the ledger cannot split estimate-only input per group; mixing in `estimatedInput` would double count |
+| Tables over ledger data use array records | Filament tables take `->records(fn () => [...])` with a `key` per row; `assertCountTableRecords()` needs an Eloquent query, so tests assert visible records instead |
 | Per-point charts bucket the range (`Range::bucketDays()`: 1 / 3 / 7) | Caps per-point queries at 13 for 90 days and smooths noisy daily accuracy |
 | Spend over time costs one query per drawn series | The ledger has no two-level grouping (day x model); proposed as L1 in the ledger's `TASKS-2.md` |
 | Trends compare one currency only | Different currencies are never added or compared; multi-currency spend shows each amount with no trend or sparkline |
