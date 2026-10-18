@@ -20,4 +20,14 @@ return [
         'warned' => 'Warned',
         'warned_description' => 'Crossed a soft limit, still sent',
     ],
+
+    'spend_over_time' => [
+        'heading' => 'Spend over time',
+        'by_model' => 'By model',
+        'by_provider' => 'By provider',
+        'other' => 'Other',
+        'empty' => 'No spend in this range.',
+        'includes_estimates' => 'Includes estimates for requests that never reported usage.',
+        'other_currencies' => 'Showing :currency only; spend in :others is not converted or included.',
+    ],
 ];

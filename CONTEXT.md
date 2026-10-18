@@ -25,6 +25,8 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Concerns/QueriesLedger.php` | Widgets: `range()` from the page's `range` filter (else plugin default) and `ledger()` / `ledgerBase()` as the single starting point for every ledger read (tenant scoping hooks in here) |
 | `src/Support/Format.php` | Locale-aware `number()` and `percent()` ("No data" for null) |
 | `src/Widgets/StatsOverview.php` | Spend (trend vs previous period, sparkline, single currency only), requests, average/peak context, blocked, warned. No polling |
+| `src/Widgets/SpendOverTime.php` | Line chart per model/provider (filter), top `ChartPalette::slots()` series plus "Other" = daily total minus drawn series; largest currency drawn, others named |
+| `src/Support/ChartPalette.php` | Six categorical slots + neutral "Other", light and dark, validated with the dataviz palette validator on `#ffffff` / `#18181b`; a Chart.js scriptable picks the mode at draw time. Slots go by series name, not rank |
 | `src/Pages/` | Overview, Requests (table, filters, run grouping, detail view, GDPR action), Models |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
@@ -47,6 +49,8 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | Navigation sort is a base plus each page's own `$navigationSort` | One option moves the whole Headroom block while keeping page order; an icon can be set for all pages or per page |
 | Every page and widget gets its range through `Range::resolve()` | One place for the allowed ranges, their labels and the plugin default; invalid `defaultRange()` strings throw when set, not when a page renders |
 | Filament checks `canView()` on widget mount | A widget the user may not see returns 403 even when mounted directly, so `AuthorisesWidgetView` protects data, not just layout |
+| Chart options are `RawJs` with every literal from `Js::from()` | Filament renders chart options inside an HTML attribute; a `"` from `json_encode()` ends it and prints the JS as text. A test asserts the options contain no double quote |
+| Spend over time costs one query per drawn series | The ledger has no two-level grouping (day x model); proposed as L1 in the ledger's `TASKS-2.md` |
 | Trends compare one currency only | Different currencies are never added or compared; multi-currency spend shows each amount with no trend or sparkline |
 | Widgets are never added with `$panel->widgets()` | That list is the panel's own dashboard; Headroom widgets appear on the Overview page or wherever a host places them, and `widgets()` gates them through `canView()` |
 | `pages()` / `widgets()` accept any Page / Widget subclass | Users customise by subclassing a built-in part; `HeadroomPlugin::PAGES` and `WIDGETS` hold the defaults |
