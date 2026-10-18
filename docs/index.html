@@ -55,8 +55,20 @@
 
   header.site { padding: 1.25rem 0; }
   header.site .wrap { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
-  .brand { font-weight: 800; font-variation-settings: "wdth" 125; text-decoration: none; font-size: 1.25rem; display: inline-flex; align-items: baseline; gap: 0.4rem; }
-  .brand span { color: var(--history); }
+  .brand { font-weight: 800; font-variation-settings: "wdth" 125; text-decoration: none; font-size: 1.375rem; display: inline-flex; align-items: flex-end; gap: 0.5rem; }
+  /* Sits on the wordmark's baseline: the cropped artwork ends at the letters' foot. */
+  .brand span { color: var(--history); line-height: 1; margin-bottom: -0.14em; }
+
+  /* headroom-logo.png (shared with the Headroom site) has wide transparent padding
+     (artwork box 92-1900 x 168-610 of 1983x793); negative margins crop it so the
+     artwork aligns with the page edge. */
+  .brand img {
+    --h: 2.25rem;
+    display: block;
+    height: calc(var(--h) * 1.7941);
+    width: auto;
+    margin: calc(var(--h) * -0.3801) 0 calc(var(--h) * -0.4140) calc(var(--h) * -0.2081);
+  }
 
   nav.links { display: flex; gap: 1.25rem; flex-wrap: wrap; font-size: 0.9375rem; }
 
@@ -151,7 +163,7 @@
 
 <header class="site">
   <div class="wrap">
-    <a class="brand" href="#">Headroom <span>for Filament</span></a>
+    <a class="brand" href="#"><img src="headroom-logo.png" alt="Headroom" width="1983" height="793"><span>for Filament</span></a>
     <nav class="links" aria-label="Project">
       <a href="https://github.com/phoenix1331/filament-headroom">GitHub</a>
       <a href="https://packagist.org/packages/phoenix1331/filament-headroom">Packagist</a>
