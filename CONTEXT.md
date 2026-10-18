@@ -26,7 +26,7 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `workbench/` | Testbench workbench: Filament panel using the plugin, ledger migrations, seeder built on `LedgerEntryFactory`. Export-ignored |
 | `docs/` | GitHub Pages site and screenshots. Export-ignored |
 
-Only `src/HeadroomPlugin.php` and `src/FilamentHeadroomServiceProvider.php` exist so far. Treat the rest of the table as the target layout.
+Only `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php` and the `tests/` scaffolding exist so far. Treat the rest of the table as the target layout.
 
 ## Decisions
 
@@ -39,6 +39,7 @@ Only `src/HeadroomPlugin.php` and `src/FilamentHeadroomServiceProvider.php` exis
 | Require Headroom directly, not just via the ledger | The plugin uses Headroom enums such as `CountMethod` |
 | No Docker, FrankenPHP, Makefile or MySQL | Package development only: PHP and Composer in WSL, Testbench on SQLite. Overrides the default stack in `.claude/rules/RULES.md` |
 | Siblings from Packagist, not path repositories | Both are published at v0.1.0, and `../` paths would break CI. See local ledger changes below |
+| `TestCase` sets `$enablesPackageDiscoveries = true` | Loads every Filament, Livewire, Headroom and ledger provider without a hand-kept list. `tests/Fixtures/TestPanelProvider.php` registers the default `admin` panel with the plugin |
 | No PHPStan baseline, no inline `@var` overrides | Types are narrowed with runtime guards (e.g. `HeadroomPlugin::ensureInstance()`), so max level holds without suppressions |
 | Core stays free and MIT | It is the shop window for the family; any paid features go in a separate add-on package |
 
@@ -54,6 +55,7 @@ Only `src/HeadroomPlugin.php` and `src/FilamentHeadroomServiceProvider.php` exis
 | `laravel/pint` (dev) | `^1.32` | Code style; `pint.json` uses the `laravel` preset plus `declare_strict_types` |
 | `larastan/larastan` (dev) | `^3.13` | PHPStan at `level: max` over `src/` (`phpstan.neon`, cache in `build/phpstan`) |
 | `orchestra/testbench` (dev) | `^11.3` | Boots Laravel for Larastan, Pest and the workbench |
+| `pestphp/pest` + `pest-plugin-laravel` + `pest-plugin-livewire` (dev) | `^5.3`, `^5.0`, `^5.0` | Tests, arch tests, `livewire()` helper for pages and widgets. `allow-plugins.pestphp/pest-plugin` enabled |
 | `husky` (npm dev) | `^9.1.7` | Tracked `.husky/` hooks: `commit-msg` (lowercase conventional commits, no scopes), `pre-commit` (`pint --test`, `osv-scanner --lockfile=composer.lock`). POSIX `sh` only |
 
 ## Local setup

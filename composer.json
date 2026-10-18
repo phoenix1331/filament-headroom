@@ -40,6 +40,11 @@
             "Phoenix1331\\FilamentHeadroom\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Phoenix1331\\FilamentHeadroom\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
@@ -48,13 +53,19 @@
         }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require-dev": {
         "larastan/larastan": "^3.13",
         "laravel/pint": "^1.32",
-        "orchestra/testbench": "^11.3"
+        "orchestra/testbench": "^11.3",
+        "pestphp/pest": "^5.3",
+        "pestphp/pest-plugin-laravel": "^5.0",
+        "pestphp/pest-plugin-livewire": "^5.0"
     }
 }
