@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Phoenix1331\FilamentHeadroom\Support;
 
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Number;
 use Phoenix1331\AiHeadroomLedger\Data\Money;
 use Phoenix1331\AiHeadroomLedger\Data\Spend;
@@ -15,7 +17,7 @@ use Phoenix1331\FilamentHeadroom\Enums\ValueBasis;
  * summed across currencies) with the basis that says whether it is billed.
  * Every cost on every page and widget goes through this class.
  */
-final readonly class Cost
+final readonly class Cost implements Htmlable
 {
     /** Below this many micro-units (one cent) amounts show four decimals, so sub-cent costs do not read as zero. */
     private const int SUB_CENT = 10_000;
@@ -92,6 +94,15 @@ final readonly class Cost
         }
 
         return __('filament-headroom::basis.with_amount', ['amount' => $this->amount(), 'basis' => mb_strtolower($basis)]);
+    }
+
+    /**
+     * The amount with its badge, so a Cost can be dropped into any Filament
+     * slot that accepts Htmlable (stat values, table cells, infolists).
+     */
+    public function toHtml(): string
+    {
+        return Blade::render('<x-filament-headroom::cost :cost="$cost" />', ['cost' => $this]);
     }
 
     private static function format(Money $money): string

@@ -78,6 +78,18 @@ enum Range: string implements HasLabel
         return [$today->subDays($this->days() - 1), $today];
     }
 
+    /**
+     * The same number of days immediately before the range, for trends.
+     *
+     * @return array{CarbonImmutable, CarbonImmutable}
+     */
+    public function previous(?CarbonImmutable $today = null): array
+    {
+        [$from] = $this->between($today);
+
+        return [$from->subDays($this->days()), $from->subDay()];
+    }
+
     public function apply(LedgerQuery $query): LedgerQuery
     {
         return $query->between(...$this->between());

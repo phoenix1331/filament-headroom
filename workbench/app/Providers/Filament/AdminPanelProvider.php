@@ -20,6 +20,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Phoenix1331\FilamentHeadroom\HeadroomPlugin;
+use Phoenix1331\FilamentHeadroom\Widgets\StatsOverview;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -32,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->colors(['primary' => Color::Indigo])
             ->pages([Dashboard::class])
-            ->widgets([AccountWidget::class])
+            ->widgets([AccountWidget::class, StatsOverview::class])
             ->plugin(HeadroomPlugin::make())
             ->middleware([
                 EncryptCookies::class,

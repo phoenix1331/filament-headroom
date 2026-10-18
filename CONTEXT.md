@@ -22,6 +22,9 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Enums/Range.php` | `7d` / `30d` / `90d`: labels, `between()` (inclusive days ending today), `apply(LedgerQuery)`, `resolve($state)` falling back to the plugin's `defaultRange()` |
 | `src/Support/Cost.php` + `src/Enums/ValueBasis.php` | Every cost goes through `Cost::fromMoney()` / `fromSpend()` / `fromSummary()`: formatted per currency, with a basis (Reported, Estimated, IncludesEstimates, Approximate) that carries badge label, tooltip and colour |
 | `resources/views/components/cost.blade.php` | `<x-filament-headroom::cost :cost="$cost" />`: amount plus Filament badge unless the basis is Reported |
+| `src/Concerns/QueriesLedger.php` | Widgets: `range()` from the page's `range` filter (else plugin default) and `ledger()` / `ledgerBase()` as the single starting point for every ledger read (tenant scoping hooks in here) |
+| `src/Support/Format.php` | Locale-aware `number()` and `percent()` ("No data" for null) |
+| `src/Widgets/StatsOverview.php` | Spend (trend vs previous period, sparkline, single currency only), requests, average/peak context, blocked, warned. No polling |
 | `src/Pages/` | Overview, Requests (table, filters, run grouping, detail view, GDPR action), Models |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
@@ -43,6 +46,8 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | `authorize()` callback must return exactly `true` | Truthy values (`1`, `'yes'`) deny, so a sloppy callback fails closed |
 | Navigation sort is a base plus each page's own `$navigationSort` | One option moves the whole Headroom block while keeping page order; an icon can be set for all pages or per page |
 | Every page and widget gets its range through `Range::resolve()` | One place for the allowed ranges, their labels and the plugin default; invalid `defaultRange()` strings throw when set, not when a page renders |
+| Filament checks `canView()` on widget mount | A widget the user may not see returns 403 even when mounted directly, so `AuthorisesWidgetView` protects data, not just layout |
+| Trends compare one currency only | Different currencies are never added or compared; multi-currency spend shows each amount with no trend or sparkline |
 | Widgets are never added with `$panel->widgets()` | That list is the panel's own dashboard; Headroom widgets appear on the Overview page or wherever a host places them, and `widgets()` gates them through `canView()` |
 | `pages()` / `widgets()` accept any Page / Widget subclass | Users customise by subclassing a built-in part; `HeadroomPlugin::PAGES` and `WIDGETS` hold the defaults |
 | `HeadroomPlugin::current()` returns null on panels without the plugin | Widgets on host dashboards still get the local-only default instead of throwing |
@@ -78,6 +83,8 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | Migrations | Testbench defaults plus `vendor/phoenix1331/laravel-ai-headroom-ledger/database/migrations` via `testbench.yaml` (the ledger provider only publishes them) |
 | Seeder | `workbench/database/seeders/DatabaseSeeder.php`: 90 days x 3 tenants (`tenant_id` acme/globex/initech, `feature` tag) built on `LedgerEntryFactory`, every outcome, streamed, abandoned, failover, approximate cost, multi-step runs, then `headroom-ledger:rollup --from` |
 | Database | `vendor/orchestra/testbench-core/laravel/database/database.sqlite` (rebuilt on every `composer build`) |
+
+`testbench.yaml` lists `FilamentHeadroomServiceProvider` because Testbench does not auto-discover the root package (tests list it in `TestCase`). Composer's `post-autoload-dump` purges the skeleton, deleting the workbench database: run `composer build` after any `composer update`.
 
 Seed through `testbench.yaml` `seeders:` only. Adding `--seed` to the `migrate-fresh` build step runs the seeder twice and fails on the unique user email.
 

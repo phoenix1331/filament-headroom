@@ -17,6 +17,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use InvalidArgumentException;
 use LogicException;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
+use Phoenix1331\FilamentHeadroom\Widgets\StatsOverview;
 use UnitEnum;
 
 class HeadroomPlugin implements Plugin
@@ -37,7 +38,9 @@ class HeadroomPlugin implements Plugin
      *
      * @var list<class-string<Widget>>
      */
-    public const array WIDGETS = [];
+    public const array WIDGETS = [
+        StatsOverview::class,
+    ];
 
     protected bool|Closure|null $authorizeUsing = null;
 
