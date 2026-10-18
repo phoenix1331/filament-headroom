@@ -27,6 +27,7 @@ use Phoenix1331\FilamentHeadroom\Concerns\HasHeadroomNavigation;
 use Phoenix1331\FilamentHeadroom\Enums\Range;
 use Phoenix1331\FilamentHeadroom\Enums\ValueBasis;
 use Phoenix1331\FilamentHeadroom\HeadroomPlugin;
+use Phoenix1331\FilamentHeadroom\Pages\Concerns\GroupsByRun;
 use Phoenix1331\FilamentHeadroom\Support\Cost;
 use Phoenix1331\FilamentHeadroom\Support\Format;
 use Phoenix1331\FilamentHeadroom\Support\Outcomes;
@@ -38,6 +39,7 @@ use Phoenix1331\FilamentHeadroom\Support\Outcomes;
 class Requests extends Page implements HasTable
 {
     use AuthorisesPageAccess;
+    use GroupsByRun;
     use HasHeadroomNavigation;
     use InteractsWithTable;
 
@@ -67,6 +69,10 @@ class Requests extends Page implements HasTable
 
     public function getTitle(): string
     {
+        if ($this->isGroupedByRun()) {
+            return __('filament-headroom::pages.requests.runs.title');
+        }
+
         return __('filament-headroom::pages.requests.title');
     }
 
@@ -85,14 +91,14 @@ class Requests extends Page implements HasTable
                 $sortDirection,
                 $filters ?? [],
             ))
-            ->columns($this->columns())
+            ->columns($this->isGroupedByRun() ? $this->runColumns() : $this->columns())
             ->filters($this->filters(), layout: FiltersLayout::AboveContentCollapsible)
             ->filtersFormColumns(4)
             ->persistFiltersInSession()
-            ->defaultSort('counted_at', 'desc')
+            ->defaultSort($this->isGroupedByRun() ? null : 'counted_at', 'desc')
             ->paginated([10, 25, 50, 100])
             ->defaultPaginationPageOption(25)
-            ->emptyStateHeading(__('filament-headroom::pages.requests.empty'))
+            ->emptyStateHeading($this->isGroupedByRun() ? __('filament-headroom::pages.requests.runs.empty') : __('filament-headroom::pages.requests.empty'))
             ->emptyStateIcon('heroicon-o-queue-list');
     }
 
@@ -300,6 +306,10 @@ class Requests extends Page implements HasTable
      */
     protected function page(int $page, int $perPage, ?string $sortColumn, ?string $sortDirection, array $filters = []): LengthAwarePaginator
     {
+        if ($this->isGroupedByRun()) {
+            return $this->runPage($this->query($filters), $page, $perPage, $sortColumn, $sortDirection);
+        }
+
         $query = $this->query($filters)->orderBy(self::SORTS[$sortColumn ?? ''] ?? EntrySort::CountedAt, $sortDirection !== 'asc');
         $result = $query->paginate(max(1, $perPage), max(1, $page));
 

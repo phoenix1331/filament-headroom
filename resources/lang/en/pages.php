@@ -12,6 +12,18 @@ return [
         'navigation_label' => 'Requests',
         'empty' => 'No requests in this range',
         'counted' => ':method count',
+        'runs' => [
+            'title' => 'Agent runs',
+            'empty' => 'No agent runs in this range',
+            'group_by_run' => 'Group by run',
+            'show_requests' => 'Show requests',
+            'problems' => '{1} :count warned, blocked or failed|[2,*] :count warned, blocked or failed',
+            'columns' => [
+                'started' => 'Started',
+                'steps' => 'Steps',
+                'peak_context' => 'Peak context',
+            ],
+        ],
         'filters' => [
             'provider' => 'Provider',
             'count_method' => 'Count method',

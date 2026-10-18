@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Overview page at `/headroom` (titled "AI usage") with the range picker and every enabled widget, leaving the panel's own dashboard untouched.
 - Models page at `/headroom/models`: per-model requests, spend (labelled), average and peak context, blocked and warned counts, estimate error and bias, and Headroom calibration status (off, no data yet, learning, or active with its correction).
 - Requests page at `/headroom/requests`: every ledger entry in a read-only table, paginated and sorted by the ledger (time, input and output tokens, context used, cost), with estimated input and cost labelled. Filters for range, agent, provider, model, outcome, count method and each allowlisted ledger tag (named through `tagLabel()`), remembered for the session.
+- "Group by run" on the Requests page (`?group=run`): one row per agent run with steps, reported tokens, peak context, cost and how many steps warned, blocked or failed, under the same filters, ordered by most recent activity or any total.
 
 ### Changed
 

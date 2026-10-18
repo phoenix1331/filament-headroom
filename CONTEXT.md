@@ -38,7 +38,8 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Pages/Models.php` + `src/Widgets/ModelsTable.php` | `headroom/models`: one row per model (array records, sorted in PHP); not in `WIDGETS`, so `canView()` is authorisation only. Peak context and bias show as column descriptions to keep the table narrow |
 | `src/Support/CalibrationStatus.php` | Headroom `Calibrator::correctionFor()` / `store()->get()` plus `ai-headroom.calibration` config: off, none, learning (n of min samples), active (factor, margin) |
 | `src/Pages/Requests.php` | `headroom/requests`: plain `Page` + `HasTable` with an `EmbeddedTable`; array records from `paginate()` wrapped in a `LengthAwarePaginator`; `SORTS` maps sortable columns to `EntrySort`. `SelectFilter`s carry state only (custom-data tables ignore their queries); `query($filters)` maps it to `forAgent()`, `forProvider()`, `forModel()`, `withOutcome()`, `forCountMethod()`, `forTag()`. Tag filters (`tag_<key>`) come from `headroom-ledger.tags.allowed`; option lists from the last 90 days so they do not shift with the range |
-| `src/Pages/` | Still to come: Requests run grouping, detail view, GDPR action |
+| `src/Pages/Concerns/GroupsByRun.php` | Requests run view (`?group=run`, Livewire `#[Url]` so each mode builds its own table): `byRun()` spend/tokens/context totals under the same filters, paged in PHP; default order by most recent activity from time-sorted `paginate()` batches (`RUN_SCAN_BATCH`), never from invocation ID format; agent/start/end from the filter-scoped `run()` for current-page rows only |
+| `src/Pages/` | Still to come: Requests detail view, GDPR action |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
 | `resources/views/` | Blade views where Filament components are not enough |
@@ -65,6 +66,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | Tests use the array cache (`phpunit.xml` `CACHE_STORE=array`) | Headroom keeps calibration in the cache; Testbench's default database cache has no table in the test database |
 | Tables over ledger data use array records | Filament tables take `->records(fn () => [...])` with a `key` per row; `assertCountTableRecords()` needs an Eloquent query, so tests assert visible records instead |
 | Per-point charts bucket the range (`Range::bucketDays()`: 1 / 3 / 7) | Smooths noisy daily accuracy; a test caps the accuracy chart at 3 queries for any range |
+| Run view pages runs in PHP | The ledger has no run pagination (proposed L3); it costs one grouped query per total plus one `run()` per visible row |
 | Spend over time costs one query per drawn series | The ledger has no two-level grouping (day x model); proposed as L1 in the ledger's `TASKS-2.md` |
 | Trends compare one currency only | Different currencies are never added or compared; multi-currency spend shows each amount with no trend or sparkline |
 | Widgets are never added with `$panel->widgets()` | That list is the panel's own dashboard; Headroom widgets appear on the Overview page or wherever a host places them, and `widgets()` gates them through `canView()` |
