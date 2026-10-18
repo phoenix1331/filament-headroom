@@ -18,6 +18,7 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 |---|---|
 | `src/HeadroomPlugin.php` | Filament `Plugin` (ID `headroom`): `make()`, `get()`, fluent options, registers pages and widgets on the panel |
 | `src/FilamentHeadroomServiceProvider.php` | Auto-discovered; loads translations and views under the `filament-headroom` namespace |
+| `src/Concerns/` | `AuthorisesPageAccess` (`canAccess()`) and `AuthorisesWidgetView` (`canView()`), both delegating to `HeadroomPlugin::allows()`; every Headroom page and widget uses one |
 | `src/Pages/` | Overview, Requests (table, filters, run grouping, detail view, GDPR action), Models |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
@@ -26,7 +27,7 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `workbench/` | Testbench workbench: Filament panel using the plugin, ledger migrations, seeder built on `LedgerEntryFactory`. Export-ignored |
 | `docs/` | GitHub Pages site and screenshots. Export-ignored |
 
-Only `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php`, the `tests/` scaffolding and the workbench exist so far. Treat the rest of the table as the target layout.
+Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php`, `src/Concerns/`, the `tests/` scaffolding and the workbench. Treat the rest of the table as the target layout.
 
 ## Decisions
 
@@ -36,6 +37,8 @@ Only `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php`, the `t
 | Missing query capability goes back to the ledger as a proposed change | The ledger stays on 0.x until this plugin works; changing it is cheaper than coupling to its schema |
 | Never present an estimate as billed cost | Ledger `Money` carries `estimated` and `approximate` flags; every widget and page labels them |
 | Default deny outside `local` | Same as Horizon and Pulse, so the dashboard is never accidentally public |
+| `authorize()` callback must return exactly `true` | Truthy values (`1`, `'yes'`) deny, so a sloppy callback fails closed |
+| `HeadroomPlugin::current()` returns null on panels without the plugin | Widgets on host dashboards still get the local-only default instead of throwing |
 | Require Headroom directly, not just via the ledger | The plugin uses Headroom enums such as `CountMethod` |
 | No Docker, FrankenPHP, Makefile or MySQL | Package development only: PHP and Composer in WSL, Testbench on SQLite. Overrides the default stack in `.claude/rules/RULES.md` |
 | Siblings from Packagist, not path repositories | Both are published at v0.1.0, and `../` paths would break CI. See local ledger changes below |
@@ -53,7 +56,7 @@ Only `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php`, the `t
 | `phoenix1331/laravel-ai-headroom` | `^0.1` | Enums used directly |
 | `phoenix1331/laravel-ai-headroom-ledger` | `^0.1` | Query API, `LedgerEntryFactory` for seeding |
 | `laravel/pint` (dev) | `^1.32` | Code style; `pint.json` uses the `laravel` preset plus `declare_strict_types` |
-| `larastan/larastan` (dev) | `^3.13` | PHPStan at `level: max` over `src/` (`phpstan.neon`, cache in `build/phpstan`) |
+| `larastan/larastan` (dev) | `^3.13` | PHPStan at `level: max` over `src/` and `tests/Fixtures/` (`phpstan.neon`, cache in `build/phpstan`); fixtures are analysed so traits used only by them yet are checked |
 | `orchestra/testbench` (dev) | `^10.6\|^11.3` | Boots Laravel for Larastan, Pest and the workbench |
 | `pestphp/pest` + `pest-plugin-laravel` + `pest-plugin-livewire` (dev) | `^4.1\|^5.3`, `^4.0\|^5.0`, `^4.0\|^5.0` | Tests, arch tests, `livewire()` helper for pages and widgets. Pest 5 needs PHP 8.4 and Laravel 13, so v4 is allowed for the Laravel 12 and PHP 8.3 CI cells. `allow-plugins.pestphp/pest-plugin` enabled |
 | `husky` (npm dev) | `^9.1.7` | Tracked `.husky/` hooks: `commit-msg` (lowercase conventional commits, no scopes), `pre-commit` (`pint --test`, `osv-scanner --lockfile=composer.lock`). POSIX `sh` only |
