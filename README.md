@@ -10,9 +10,11 @@ A Filament dashboard for AI token usage, cost and context limits, powered by [He
 [![Licence](https://img.shields.io/github/license/phoenix1331/filament-headroom.svg)](LICENSE)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-dark.png">
-  <img src="https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-light.png" alt="The Headroom Overview page in a Filament panel: a range picker; spend with an Includes estimates badge and its trend against the previous period; request, context, blocked and warned counts; spend over time per model; tokens by agent; context headroom; the requests closest to their limit; estimate accuracy per model; and the latest blocked, warned and failed requests">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-top-dark.png">
+  <img src="https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-top-light.png" width="1400" height="595" alt="The top of the Headroom Overview page in a Filament panel: a range picker, spend with an Includes estimates badge and its trend against the previous period, and request, context, blocked and warned counts">
 </picture>
+
+Full Overview page: [light](https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-light.png) | [dark](https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-dark.png). Every page and widget is in [`docs/screenshots`](https://github.com/phoenix1331/filament-headroom/tree/main/docs/screenshots).
 
 Spend and its trend, tokens by agent, how close requests came to their context window, how accurate the estimates were, and every request and agent run, inside the Filament panel your team already uses. It reads the [Headroom Ledger](https://github.com/phoenix1331/laravel-ai-headroom-ledger), stores nothing itself, and never shows an estimate as billed cost.
 

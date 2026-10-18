@@ -2,11 +2,13 @@
 # Captures every page and widget from the seeded workbench, light and dark,
 # into docs/screenshots/. Needs Google Chrome or Chromium and a built
 # workbench (composer build). Usage: composer screenshots
+# SCREENSHOT_ONLY="overview-top models" limits the run to those names.
 set -eu
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 OUT="$ROOT/docs/screenshots"
 PORT=${SCREENSHOT_PORT:-8000}
+ONLY=${SCREENSHOT_ONLY:-}
 WIDTH=1400
 BASE="http://127.0.0.1:$PORT"
 
@@ -55,6 +57,10 @@ STEP=$(vendor/bin/testbench tinker --execute='foreach (\Phoenix1331\AiHeadroomLe
 mkdir -p "$OUT"
 
 shoot() { # mode, name, path, height
+    if [ -n "$ONLY" ] && ! printf ' %s ' "$ONLY" | grep -q " $2 "; then
+        return
+    fi
+
     flags=""
     if [ "$1" = dark ]; then
         flags="--force-dark-mode --blink-settings=preferredColorScheme=0"
@@ -79,12 +85,13 @@ for mode in light dark; do
 
     echo "$mode:"
     shoot "$mode" overview /admin/headroom 2700
+    shoot "$mode" overview-top /admin/headroom 595
     shoot "$mode" requests /admin/headroom/requests 1000
     shoot "$mode" runs "/admin/headroom/requests?group=run" 900
     shoot "$mode" request-detail "/admin/headroom/requests/$STEP" 1500
     shoot "$mode" models /admin/headroom/models 700
 
-    if [ "$mode" = light ]; then
+    if [ "$mode" = light ] && { [ -z "$ONLY" ] || printf ' %s ' "$ONLY" | grep -q " plugin-directory "; }; then
         # Filament plugin directory listing: 16:9 at 2560x1440, light theme.
         # shellcheck disable=SC2086
         "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
