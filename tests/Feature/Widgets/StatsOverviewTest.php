@@ -68,7 +68,7 @@ it('summarises the selected range', function (): void {
     LedgerEntryFactory::new()->blocked()->at(todayAt(11))->create();
 
     livewire(StatsOverview::class)
-        ->assertSeeInOrder(['Spend', 'Requests', '5', '3 with usage reported', 'Average context used', 'Blocked', '2', 'Warned', '1']);
+        ->assertSeeInOrder(['Spend', 'Requests', '5', '3 with usage reported', 'Average context used', 'Blocked', '2', 'Stopped by a Headroom limit, never sent', 'Warned', '1']);
 });
 
 it('labels spend that includes estimates and never shows it as billed', function (): void {

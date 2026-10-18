@@ -12,6 +12,15 @@
     row-gap: 0.25rem;
 }
 
+/* The basis badge is the point of the label: never truncate it. */
+.fi-headroom-cost .fi-badge,
+.fi-headroom-cost .fi-badge * {
+    max-width: none;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+}
+
 .fi-headroom-muted {
     color: var(--gray-500);
 }

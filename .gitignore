@@ -8,3 +8,4 @@ composer.lock
 .env
 .claude/
 /.playwright-mcp
+/test-app/

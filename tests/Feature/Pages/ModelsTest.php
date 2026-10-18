@@ -159,7 +159,7 @@ describe('calibration status', function (): void {
         $status = CalibrationStatus::for('gpt-5');
 
         expect($status->state)->toBe(CalibrationStatus::LEARNING)
-            ->and($status->label())->toBe('Learning (2 of 20 samples)')
+            ->and($status->label())->toBe('Learning (2/20)')
             ->and($status->color())->toBe('info');
     });
 

@@ -33,4 +33,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Requires `phoenix1331/laravel-ai-headroom-ledger` ^0.1.1.
 
+### Fixed
+
+- The Blocked stat no longer says every block was a context window overflow; requests are also blocked by cost and percentage limits.
+- Estimate and approximate badges beside costs never truncate in narrow table columns.
+
 [Unreleased]: https://github.com/phoenix1331/filament-headroom/commits/main

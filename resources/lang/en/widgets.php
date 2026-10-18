@@ -16,7 +16,7 @@ return [
         'context' => 'Average context used',
         'context_peak' => 'Peak :percent, from pre-flight counts',
         'blocked' => 'Blocked',
-        'blocked_description' => 'Did not fit the context window, never sent',
+        'blocked_description' => 'Stopped by a Headroom limit, never sent',
         'warned' => 'Warned',
         'warned_description' => 'Crossed a soft limit, still sent',
     ],

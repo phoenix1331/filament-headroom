@@ -127,6 +127,10 @@ Seed through `testbench.yaml` `seeders:` only. Adding `--seed` to the `migrate-f
 
 `.github/scripts/check-archive.sh` allows only `LICENSE`, `README.md`, `composer.json`, `src/`, `resources/`, `config/`, `database/` in `git archive`; extend it alongside `.gitattributes` when a new shipped directory appears. Lowest cell verified locally: Laravel 12.62, Testbench 10.6, Pest 4.3, Filament 5.0.
 
+## Real-app check (`test-app/`)
+
+Git-ignored and export-ignored copy of `../laravel-docs-rag-playground` (Docker, ports 8020 / 5193 / 5452 / 6399, project `filament-headroom-test-app`) with the Headroom integration ported from the ledger's `test-app`, chat on Gemini, its Postgres volume cloned from the original (docs already embedded with Voyage). `docker-compose.override.yml` mounts this repo at `/packages/filament-headroom` for a Composer path repository (symlinked, so plugin edits show live; rerun `filament:assets` after CSS changes). `/dev-login` (local only) logs in `admin@example.com` for headless screenshots. Verified against `headroom-ledger:report`: requests, spend, context, warned/blocked and accuracy all match; calibration shows real "Learning" state.
+
 ## Local setup
 
 - PHP 8.4 in WSL with `intl` (`sudo apt install php8.4-intl`) and `pcov` for coverage
