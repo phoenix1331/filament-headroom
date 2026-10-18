@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-18
+
+First release. Requires PHP 8.3 or newer, Laravel 12 or 13, Filament 5, `phoenix1331/laravel-ai-headroom` ^0.1 and `phoenix1331/laravel-ai-headroom-ledger` ^0.1.1.
+
 ### Added
 
 - `HeadroomPlugin::authorize()` to control who sees the dashboard, with a closure (receiving `$user`) or a boolean. Access is denied outside the `local` environment by default.
@@ -32,13 +36,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Every user-facing string is translatable: publish the English files with `php artisan vendor:publish --tag=filament-headroom-translations`.
 - Plugin stylesheet (`filament-headroom`), published with `php artisan filament:assets`.
 
-### Changed
-
-- Requires `phoenix1331/laravel-ai-headroom-ledger` ^0.1.1.
-
-### Fixed
-
-- The Blocked stat no longer says every block was a context window overflow; requests are also blocked by cost and percentage limits.
-- Estimate and approximate badges beside costs never truncate in narrow table columns.
-
-[Unreleased]: https://github.com/phoenix1331/filament-headroom/commits/main
+[Unreleased]: https://github.com/phoenix1331/filament-headroom/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/phoenix1331/filament-headroom/releases/tag/v0.1.0
