@@ -54,8 +54,8 @@ Only `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php`, the `t
 | `phoenix1331/laravel-ai-headroom-ledger` | `^0.1` | Query API, `LedgerEntryFactory` for seeding |
 | `laravel/pint` (dev) | `^1.32` | Code style; `pint.json` uses the `laravel` preset plus `declare_strict_types` |
 | `larastan/larastan` (dev) | `^3.13` | PHPStan at `level: max` over `src/` (`phpstan.neon`, cache in `build/phpstan`) |
-| `orchestra/testbench` (dev) | `^11.3` | Boots Laravel for Larastan, Pest and the workbench |
-| `pestphp/pest` + `pest-plugin-laravel` + `pest-plugin-livewire` (dev) | `^5.3`, `^5.0`, `^5.0` | Tests, arch tests, `livewire()` helper for pages and widgets. `allow-plugins.pestphp/pest-plugin` enabled |
+| `orchestra/testbench` (dev) | `^10.6\|^11.3` | Boots Laravel for Larastan, Pest and the workbench |
+| `pestphp/pest` + `pest-plugin-laravel` + `pest-plugin-livewire` (dev) | `^4.1\|^5.3`, `^4.0\|^5.0`, `^4.0\|^5.0` | Tests, arch tests, `livewire()` helper for pages and widgets. Pest 5 needs PHP 8.4 and Laravel 13, so v4 is allowed for the Laravel 12 and PHP 8.3 CI cells. `allow-plugins.pestphp/pest-plugin` enabled |
 | `husky` (npm dev) | `^9.1.7` | Tracked `.husky/` hooks: `commit-msg` (lowercase conventional commits, no scopes), `pre-commit` (`pint --test`, `osv-scanner --lockfile=composer.lock`). POSIX `sh` only |
 
 ## Workbench
@@ -70,6 +70,17 @@ Only `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php`, the `t
 | Database | `vendor/orchestra/testbench-core/laravel/database/database.sqlite` (rebuilt on every `composer build`) |
 
 Seed through `testbench.yaml` `seeders:` only. Adding `--seed` to the `migrate-fresh` build step runs the seeder twice and fails on the unique user email.
+
+## CI
+
+| Workflow | Jobs |
+|---|---|
+| `.github/workflows/tests.yml` | `pint --test` \| matrix PHP 8.3/8.4/8.5 x Laravel 12/13 x prefer-lowest/prefer-stable \| coverage (pcov, `--min=90`, `shell: bash` for `tee`) \| dist archive check |
+| `.github/workflows/static-analysis.yml` | Larastan with GitHub annotations |
+| `.github/workflows/release.yml` | On `v*.*.*` tags: release notes from the matching `## [x.y.z]` section of `CHANGELOG.md`, fails if missing |
+| `.github/dependabot.yml` | Composer weekly (dev grouped), npm monthly, Actions weekly (grouped) |
+
+`.github/scripts/check-archive.sh` allows only `LICENSE`, `README.md`, `composer.json`, `src/`, `resources/`, `config/`, `database/` in `git archive`; extend it alongside `.gitattributes` when a new shipped directory appears. Lowest cell verified locally: Laravel 12.62, Testbench 10.6, Pest 4.3, Filament 5.0.
 
 ## Local setup
 

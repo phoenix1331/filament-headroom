@@ -102,9 +102,9 @@
     "require-dev": {
         "larastan/larastan": "^3.13",
         "laravel/pint": "^1.32",
-        "orchestra/testbench": "^11.3",
-        "pestphp/pest": "^5.3",
-        "pestphp/pest-plugin-laravel": "^5.0",
-        "pestphp/pest-plugin-livewire": "^5.0"
+        "orchestra/testbench": "^10.6|^11.3",
+        "pestphp/pest": "^4.1|^5.3",
+        "pestphp/pest-plugin-laravel": "^4.0|^5.0",
+        "pestphp/pest-plugin-livewire": "^4.0|^5.0"
     }
 }
