@@ -48,4 +48,17 @@ return [
         'empty' => 'No counted requests in this range.',
         'near_limit' => '{0} Share of the context window used, from pre-flight counts; over 100% did not fit. No requests reached :percent%.|{1} Share of the context window used, from pre-flight counts; over 100% did not fit. :count request reached :percent% or more.|[2,*] Share of the context window used, from pre-flight counts; over 100% did not fit. :count requests reached :percent% or more.',
     ],
+
+    'estimate_accuracy' => [
+        'heading' => 'Estimate accuracy',
+        'description' => "Weighted absolute error between Headroom's pre-flight estimate and reported input tokens, per model. Lower is better; failover answers are left out.",
+        'empty' => 'No requests in this range reported usage from the model that was counted.',
+        'all_methods' => 'All count methods',
+        'samples' => 'samples',
+        'methods' => [
+            'native' => 'Native',
+            'estimated' => 'Estimated',
+            'calibrated' => 'Calibrated',
+        ],
+    ],
 ];

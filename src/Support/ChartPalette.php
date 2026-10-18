@@ -35,6 +35,21 @@ final class ChartPalette
     }
 
     /**
+     * Colour follows the series, not its rank: slots go in name order, so a
+     * series keeps its colour while the set of drawn series is unchanged.
+     *
+     * @param  list<string>  $keys
+     * @return array<string, int>
+     */
+    public static function slotsFor(array $keys): array
+    {
+        $sorted = $keys;
+        sort($sorted, SORT_NATURAL);
+
+        return array_flip($sorted);
+    }
+
+    /**
      * A Chart.js scriptable colour for the chart surface in the current mode.
      */
     public static function surface(): string

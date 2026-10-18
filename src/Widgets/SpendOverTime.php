@@ -117,7 +117,7 @@ class SpendOverTime extends ChartWidget
 
         $groups = $this->grouped($this->ledger())->spend();
         $top = $this->topKeys($groups, $currency);
-        $slots = self::slotsFor($top);
+        $slots = ChartPalette::slotsFor($top);
 
         $datasets = [];
         $drawn = array_fill(0, count($days), 0);
@@ -235,21 +235,6 @@ class SpendOverTime extends ChartWidget
         arsort($totals);
 
         return array_slice(array_map('strval', array_keys($totals)), 0, ChartPalette::slots());
-    }
-
-    /**
-     * Colour follows the series, not its rank: slots go in name order, so a
-     * model keeps its colour while the set of drawn series is unchanged.
-     *
-     * @param  list<string>  $keys
-     * @return array<string, int>
-     */
-    private static function slotsFor(array $keys): array
-    {
-        $sorted = $keys;
-        sort($sorted, SORT_NATURAL);
-
-        return array_flip($sorted);
     }
 
     /**

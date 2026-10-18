@@ -90,6 +90,38 @@ enum Range: string implements HasLabel
         return [$from->subDays($this->days()), $from->subDay()];
     }
 
+    /**
+     * Days per point for charts that cost one query per point.
+     */
+    public function bucketDays(): int
+    {
+        return match ($this) {
+            self::SevenDays => 1,
+            self::ThirtyDays => 3,
+            self::NinetyDays => 7,
+        };
+    }
+
+    /**
+     * The range split into consecutive buckets of bucketDays(), oldest first,
+     * ending today. The oldest bucket is shorter when the days do not divide.
+     *
+     * @return list<array{CarbonImmutable, CarbonImmutable}>
+     */
+    public function buckets(?CarbonImmutable $today = null): array
+    {
+        [$from, $to] = $this->between($today);
+        $buckets = [];
+
+        while ($to >= $from) {
+            $start = $to->subDays($this->bucketDays() - 1)->max($from);
+            array_unshift($buckets, [$start, $to]);
+            $to = $start->subDay();
+        }
+
+        return $buckets;
+    }
+
     public function apply(LedgerQuery $query): LedgerQuery
     {
         return $query->between(...$this->between());
