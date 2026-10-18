@@ -8,6 +8,7 @@ env:
 
 providers:
   - Phoenix1331\FilamentHeadroom\FilamentHeadroomServiceProvider
+  - Workbench\App\Providers\WorkbenchServiceProvider
   - Workbench\App\Providers\Filament\AdminPanelProvider
 
 migrations:

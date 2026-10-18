@@ -12,6 +12,10 @@ return [
         'navigation_label' => 'Requests',
         'empty' => 'No requests in this range',
         'counted' => ':method count',
+        'filters' => [
+            'provider' => 'Provider',
+            'count_method' => 'Count method',
+        ],
         'columns' => [
             'when' => 'When',
             'outcome' => 'Outcome',

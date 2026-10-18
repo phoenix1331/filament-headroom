@@ -37,8 +37,8 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Pages/Overview.php` | `headroom`: every enabled widget |
 | `src/Pages/Models.php` + `src/Widgets/ModelsTable.php` | `headroom/models`: one row per model (array records, sorted in PHP); not in `WIDGETS`, so `canView()` is authorisation only. Peak context and bias show as column descriptions to keep the table narrow |
 | `src/Support/CalibrationStatus.php` | Headroom `Calibrator::correctionFor()` / `store()->get()` plus `ai-headroom.calibration` config: off, none, learning (n of min samples), active (factor, margin) |
-| `src/Pages/Requests.php` | `headroom/requests`: plain `Page` + `HasTable` with an `EmbeddedTable`; array records from `paginate()` wrapped in a `LengthAwarePaginator`; `SORTS` maps sortable columns to `EntrySort`. Range is the plugin default until the filters task |
-| `src/Pages/` | Still to come: Requests filters, run grouping, detail view, GDPR action |
+| `src/Pages/Requests.php` | `headroom/requests`: plain `Page` + `HasTable` with an `EmbeddedTable`; array records from `paginate()` wrapped in a `LengthAwarePaginator`; `SORTS` maps sortable columns to `EntrySort`. `SelectFilter`s carry state only (custom-data tables ignore their queries); `query($filters)` maps it to `forAgent()`, `forProvider()`, `forModel()`, `withOutcome()`, `forCountMethod()`, `forTag()`. Tag filters (`tag_<key>`) come from `headroom-ledger.tags.allowed`; option lists from the last 90 days so they do not shift with the range |
+| `src/Pages/` | Still to come: Requests run grouping, detail view, GDPR action |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
 | `resources/views/` | Blade views where Filament components are not enough |
@@ -101,6 +101,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | Login | `/_workbench` auto-logs in as `demo@example.com` (password `password`) and lands on `/admin/headroom` (Overview) |
 | Panel | `workbench/app/Providers/Filament/AdminPanelProvider.php`: default `admin` panel, `HeadroomPlugin::make()`, and a host-style dashboard (`workbench/app/Filament/Pages/Dashboard.php` with `RangeSelect`) placing `StatsOverview`, as an app would |
 | Migrations | Testbench defaults plus `vendor/phoenix1331/laravel-ai-headroom-ledger/database/migrations` via `testbench.yaml` (the ledger provider only publishes them) |
+| Config | `workbench/app/Providers/WorkbenchServiceProvider.php` allowlists `tenant_id` (primary tag) and `feature`; the panel's `tagLabel()` shows tenants as company names |
 | Seeder | `workbench/database/seeders/DatabaseSeeder.php`: 90 days x 3 tenants (`tenant_id` acme/globex/initech, `feature` tag) built on `LedgerEntryFactory`, every outcome, streamed, abandoned, failover, approximate cost, multi-step runs, then `headroom-ledger:rollup --from` |
 | Database | `vendor/orchestra/testbench-core/laravel/database/database.sqlite` (rebuilt on every `composer build`) |
 

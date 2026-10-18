@@ -13,6 +13,8 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Phoenix1331\AiHeadroom\Enums\CountMethod;
@@ -76,13 +78,17 @@ class Requests extends Page implements HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->records(fn (int|string $page, int|string $recordsPerPage, ?string $sortColumn, ?string $sortDirection): LengthAwarePaginator => $this->page(
+            ->records(fn (int|string $page, int|string $recordsPerPage, ?string $sortColumn, ?string $sortDirection, ?array $filters): LengthAwarePaginator => $this->page(
                 (int) $page,
                 (int) $recordsPerPage,
                 $sortColumn,
                 $sortDirection,
+                $filters ?? [],
             ))
             ->columns($this->columns())
+            ->filters($this->filters(), layout: FiltersLayout::AboveContentCollapsible)
+            ->filtersFormColumns(4)
+            ->persistFiltersInSession()
             ->defaultSort('counted_at', 'desc')
             ->paginated([10, 25, 50, 100])
             ->defaultPaginationPageOption(25)
@@ -91,11 +97,146 @@ class Requests extends Page implements HasTable
     }
 
     /**
-     * The query every row comes from, before sorting and paging.
+     * The ledger query for the table's filter state, before sorting and paging.
+     *
+     * @param  array<mixed>  $filters
      */
-    protected function query(): LedgerQuery
+    protected function query(array $filters): LedgerQuery
     {
-        return Range::resolve(null)->apply(HeadroomPlugin::ledger());
+        $query = Range::resolve(self::value($filters, 'range'))->apply(HeadroomPlugin::ledger());
+
+        $agent = self::value($filters, 'agent');
+        $provider = self::value($filters, 'provider');
+        $model = self::value($filters, 'model');
+        $outcomes = array_filter(array_map(Outcome::tryFrom(...), self::values($filters, 'outcome')));
+        $methods = array_filter(array_map(CountMethod::tryFrom(...), self::values($filters, 'count_method')));
+
+        $query = $agent === null ? $query : $query->forAgent($agent);
+        $query = $provider === null ? $query : $query->forProvider($provider);
+        $query = $model === null ? $query : $query->forModel($model);
+        $query = $outcomes === [] ? $query : $query->withOutcome(...$outcomes);
+        $query = $methods === [] ? $query : $query->forCountMethod(...$methods);
+
+        foreach (self::tagKeys() as $key) {
+            $value = self::value($filters, self::tagFilter($key));
+            $query = $value === null ? $query : $query->forTag($key, $value);
+        }
+
+        return $query;
+    }
+
+    /**
+     * @return array<SelectFilter>
+     */
+    protected function filters(): array
+    {
+        $filters = [
+            SelectFilter::make('range')
+                ->label(__('filament-headroom::ranges.label'))
+                ->options(fn (): array => Range::options())
+                ->default(fn (): string => Range::resolve(null)->value)
+                ->selectablePlaceholder(false),
+            SelectFilter::make('agent')
+                ->label(__('filament-headroom::pages.requests.columns.agent'))
+                ->options(fn (): array => $this->options(fn (LedgerQuery $query): array => $query->byAgent()->tokens()->keys(), class_basename(...)))
+                ->searchable(),
+            SelectFilter::make('provider')
+                ->label(__('filament-headroom::pages.requests.filters.provider'))
+                ->options(fn (): array => $this->options(fn (LedgerQuery $query): array => $query->byProvider()->tokens()->keys())),
+            SelectFilter::make('model')
+                ->label(__('filament-headroom::pages.requests.columns.model'))
+                ->options(fn (): array => $this->options(fn (LedgerQuery $query): array => $query->byModel()->tokens()->keys()))
+                ->searchable(),
+            SelectFilter::make('outcome')
+                ->label(__('filament-headroom::pages.requests.columns.outcome'))
+                ->options(array_combine(
+                    array_map(fn (Outcome $outcome): string => $outcome->value, Outcome::cases()),
+                    array_map(Outcomes::label(...), Outcome::cases()),
+                ))
+                ->multiple(),
+            SelectFilter::make('count_method')
+                ->label(__('filament-headroom::pages.requests.filters.count_method'))
+                ->options(array_combine(
+                    array_map(fn (CountMethod $method): string => $method->value, CountMethod::cases()),
+                    array_map(fn (CountMethod $method): string => __("filament-headroom::count_methods.{$method->value}"), CountMethod::cases()),
+                ))
+                ->multiple(),
+        ];
+
+        foreach (self::tagKeys() as $key) {
+            $filters[] = SelectFilter::make(self::tagFilter($key))
+                ->label($key)
+                ->options(fn (): array => $this->options(
+                    fn (LedgerQuery $query): array => $query->byTag($key)->tokens()->keys(),
+                    fn (string $value): string => HeadroomPlugin::current()?->getTagLabel($key, $value) ?? $value,
+                ))
+                ->searchable();
+        }
+
+        return $filters;
+    }
+
+    /**
+     * Filter choices from the widest range, so they do not shift as the range
+     * changes. Requests without a value (the null group) are not offered.
+     *
+     * @param  callable(LedgerQuery): list<string|null>  $keys
+     * @param  (callable(string): string)|null  $label
+     * @return array<string, string>
+     */
+    protected function options(callable $keys, ?callable $label = null): array
+    {
+        $options = [];
+
+        foreach ($keys(Range::NinetyDays->apply(HeadroomPlugin::ledger())) as $key) {
+            if ($key !== null) {
+                $options[$key] = $label === null ? $key : $label($key);
+            }
+        }
+
+        asort($options, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $options;
+    }
+
+    /**
+     * Context tag keys the ledger records, from its allowlist.
+     *
+     * @return list<string>
+     */
+    protected static function tagKeys(): array
+    {
+        $keys = config('headroom-ledger.tags.allowed', []);
+
+        return is_array($keys) ? array_values(array_filter($keys, is_string(...))) : [];
+    }
+
+    protected static function tagFilter(string $key): string
+    {
+        return 'tag_'.$key;
+    }
+
+    /**
+     * @param  array<mixed>  $filters
+     */
+    private static function value(array $filters, string $name): ?string
+    {
+        $state = $filters[$name] ?? null;
+        $value = is_array($state) ? ($state['value'] ?? null) : null;
+
+        return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    /**
+     * @param  array<mixed>  $filters
+     * @return list<string>
+     */
+    private static function values(array $filters, string $name): array
+    {
+        $state = $filters[$name] ?? null;
+        $values = is_array($state) ? ($state['values'] ?? null) : null;
+
+        return is_array($values) ? array_values(array_filter($values, is_string(...))) : [];
     }
 
     /**
@@ -154,11 +295,12 @@ class Requests extends Page implements HasTable
     /**
      * One page from the ledger as a paginator Filament can render.
      *
+     * @param  array<mixed>  $filters
      * @return LengthAwarePaginator<string, array<string, mixed>>
      */
-    protected function page(int $page, int $perPage, ?string $sortColumn, ?string $sortDirection): LengthAwarePaginator
+    protected function page(int $page, int $perPage, ?string $sortColumn, ?string $sortDirection, array $filters = []): LengthAwarePaginator
     {
-        $query = $this->query()->orderBy(self::SORTS[$sortColumn ?? ''] ?? EntrySort::CountedAt, $sortDirection !== 'asc');
+        $query = $this->query($filters)->orderBy(self::SORTS[$sortColumn ?? ''] ?? EntrySort::CountedAt, $sortDirection !== 'asc');
         $result = $query->paginate(max(1, $perPage), max(1, $page));
 
         $rows = [];

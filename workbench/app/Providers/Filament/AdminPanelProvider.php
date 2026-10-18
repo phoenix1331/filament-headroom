@@ -34,7 +34,12 @@ class AdminPanelProvider extends PanelProvider
             ->colors(['primary' => Color::Indigo])
             ->pages([Dashboard::class])
             ->widgets([AccountWidget::class, StatsOverview::class])
-            ->plugin(HeadroomPlugin::make())
+            ->plugin(
+                HeadroomPlugin::make()->tagLabel(fn (string $key, string $value): string => match ($key) {
+                    'tenant_id' => ucfirst($value).' Ltd',
+                    default => $value,
+                }),
+            )
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
