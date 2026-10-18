@@ -11,6 +11,7 @@ use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Filament\Widgets\Widget;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Support\Htmlable;
 use InvalidArgumentException;
@@ -23,6 +24,20 @@ class HeadroomPlugin implements Plugin
     use EvaluatesClosures;
 
     public const ID = 'headroom';
+
+    /**
+     * Pages registered when pages() is not called.
+     *
+     * @var list<class-string<Page>>
+     */
+    public const array PAGES = [];
+
+    /**
+     * Widgets enabled when widgets() is not called.
+     *
+     * @var list<class-string<Widget>>
+     */
+    public const array WIDGETS = [];
 
     protected bool|Closure|null $authorizeUsing = null;
 
@@ -40,6 +55,12 @@ class HeadroomPlugin implements Plugin
     protected Range|string|Closure $defaultRange = Range::DEFAULT;
 
     protected ?Closure $tagLabelUsing = null;
+
+    /** @var list<class-string<Page>>|null */
+    protected ?array $pages = null;
+
+    /** @var list<class-string<Widget>>|null */
+    protected ?array $widgets = null;
 
     public static function make(): static
     {
@@ -234,9 +255,59 @@ class HeadroomPlugin implements Plugin
         throw new InvalidArgumentException('The Headroom tag label must resolve to a string, '.get_debug_type($label).' given.');
     }
 
+    /**
+     * The pages to register, replacing the built-in list. Pass a subclass to
+     * customise a page, or leave a page out to disable it.
+     *
+     * @param  array<mixed>  $pages
+     */
+    public function pages(array $pages): static
+    {
+        $this->pages = self::classList($pages, Page::class, 'page');
+
+        return $this;
+    }
+
+    /**
+     * @return list<class-string<Page>>
+     */
+    public function getPages(): array
+    {
+        return $this->pages ?? self::PAGES;
+    }
+
+    /**
+     * The widgets to enable, replacing the built-in list. Disabled widgets
+     * are left off the Overview page and hidden on any dashboard of this panel.
+     *
+     * @param  array<mixed>  $widgets
+     */
+    public function widgets(array $widgets): static
+    {
+        $this->widgets = self::classList($widgets, Widget::class, 'widget');
+
+        return $this;
+    }
+
+    /**
+     * @return list<class-string<Widget>>
+     */
+    public function getWidgets(): array
+    {
+        return $this->widgets ?? self::WIDGETS;
+    }
+
+    /**
+     * @param  class-string<Widget>  $widget
+     */
+    public function hasWidget(string $widget): bool
+    {
+        return in_array($widget, $this->getWidgets(), true);
+    }
+
     public function register(Panel $panel): void
     {
-        //
+        $panel->pages($this->getPages());
     }
 
     public function boot(Panel $panel): void
@@ -251,6 +322,28 @@ class HeadroomPlugin implements Plugin
     private static function defaultAuthorization(): bool
     {
         return app()->environment('local');
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param  array<mixed>  $classes
+     * @param  class-string<T>  $parent
+     * @return list<class-string<T>>
+     */
+    private static function classList(array $classes, string $parent, string $kind): array
+    {
+        $list = [];
+
+        foreach ($classes as $class) {
+            if (! is_string($class) || ! is_a($class, $parent, true)) {
+                throw new InvalidArgumentException('Headroom '.$kind.'s must be '.$parent.' classes, '.(is_string($class) ? "[{$class}]" : get_debug_type($class)).' given.');
+            }
+
+            $list[] = $class;
+        }
+
+        return array_values(array_unique($list));
     }
 
     private static function toRange(mixed $range): Range

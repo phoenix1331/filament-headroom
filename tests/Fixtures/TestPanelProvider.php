@@ -16,6 +16,8 @@ class TestPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->plugin(HeadroomPlugin::make());
+            ->plugin(
+                HeadroomPlugin::make()->widgets([...HeadroomPlugin::WIDGETS, AuthorisedWidget::class]),
+            );
     }
 }

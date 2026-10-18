@@ -41,6 +41,8 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | `authorize()` callback must return exactly `true` | Truthy values (`1`, `'yes'`) deny, so a sloppy callback fails closed |
 | Navigation sort is a base plus each page's own `$navigationSort` | One option moves the whole Headroom block while keeping page order; an icon can be set for all pages or per page |
 | Every page and widget gets its range through `Range::resolve()` | One place for the allowed ranges, their labels and the plugin default; invalid `defaultRange()` strings throw when set, not when a page renders |
+| Widgets are never added with `$panel->widgets()` | That list is the panel's own dashboard; Headroom widgets appear on the Overview page or wherever a host places them, and `widgets()` gates them through `canView()` |
+| `pages()` / `widgets()` accept any Page / Widget subclass | Users customise by subclassing a built-in part; `HeadroomPlugin::PAGES` and `WIDGETS` hold the defaults |
 | `HeadroomPlugin::current()` returns null on panels without the plugin | Widgets on host dashboards still get the local-only default instead of throwing |
 | Require Headroom directly, not just via the ledger | The plugin uses Headroom enums such as `CountMethod` |
 | No Docker, FrankenPHP, Makefile or MySQL | Package development only: PHP and Composer in WSL, Testbench on SQLite. Overrides the default stack in `.claude/rules/RULES.md` |

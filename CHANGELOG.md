@@ -12,5 +12,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `navigationGroup()`, `navigationIcon()` (for every page, or one page) and `navigationSort()` plugin options. Pages are grouped under "Headroom" by default.
 - `defaultRange()` plugin option (`7d`, `30d` or `90d`, default `30d`) and the `Range` enum shared by every page and widget.
 - `tagLabel()` plugin option to control how ledger tags are shown, for example a tenant name instead of its ID.
+- `pages()` and `widgets()` plugin options to disable built-in parts or swap in subclasses. Disabled pages are not registered and disabled widgets stay hidden on every dashboard of the panel.
 
 [Unreleased]: https://github.com/phoenix1331/filament-headroom/commits/main
