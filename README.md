@@ -11,7 +11,7 @@ A Filament dashboard for AI token usage, cost and context limits, powered by [He
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-top-dark.png">
-  <img src="https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-top-light.png" width="1400" height="595" alt="The top of the Headroom Overview page in a Filament panel: a range picker, spend with an Includes estimates badge and its trend against the previous period, and request, context, blocked and warned counts">
+  <img src="https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-top-light.png" alt="The top of the Headroom Overview page in a Filament panel: a range picker, spend with an Includes estimates badge and its trend against the previous period, and request, context, blocked and warned counts">
 </picture>
 
 Full Overview page: [light](https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-light.png) | [dark](https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-dark.png). Every page and widget is in [`docs/screenshots`](https://github.com/phoenix1331/filament-headroom/tree/main/docs/screenshots).
