@@ -19,11 +19,12 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/HeadroomPlugin.php` | Filament `Plugin` (ID `headroom`): `make()`, `get()`, fluent options, registers pages and widgets on the panel |
 | `src/FilamentHeadroomServiceProvider.php` | Auto-discovered; loads translations and views under the `filament-headroom` namespace |
 | `src/Concerns/` | `AuthorisesPageAccess` (`canAccess()`) and `AuthorisesWidgetView` (`canView()`), both delegating to `HeadroomPlugin::allows()`; every Headroom page and widget uses one. `HasHeadroomNavigation` reads group, icon and sort from the plugin on every page |
+| `src/Enums/Range.php` | `7d` / `30d` / `90d`: labels, `between()` (inclusive days ending today), `apply(LedgerQuery)`, `resolve($state)` falling back to the plugin's `defaultRange()` |
 | `src/Pages/` | Overview, Requests (table, filters, run grouping, detail view, GDPR action), Models |
 | `src/Widgets/` | Stats overview, spend over time, tokens by agent, context headroom, estimate accuracy, blocked/warned/failed. Also usable on host dashboards |
 | `resources/lang/en/` | Every user-facing string |
 | `resources/views/` | Blade views where Filament components are not enough |
-| `tests/` | Pest + Testbench with a Filament panel registered; arch tests enforce the data access rule |
+| `tests/` | Pest + Testbench with a Filament panel registered; arch tests enforce the data access rule. `tests/Concerns/WithLedgerDatabase.php` migrates the ledger tables for tests that need data; `tests/Fixtures/` holds pages and widgets that exercise the concerns |
 | `workbench/` | Testbench workbench: Filament panel using the plugin, ledger migrations, seeder built on `LedgerEntryFactory`. Export-ignored |
 | `docs/` | GitHub Pages site and screenshots. Export-ignored |
 
@@ -39,6 +40,7 @@ Built so far: `src/HeadroomPlugin.php`, `src/FilamentHeadroomServiceProvider.php
 | Default deny outside `local` | Same as Horizon and Pulse, so the dashboard is never accidentally public |
 | `authorize()` callback must return exactly `true` | Truthy values (`1`, `'yes'`) deny, so a sloppy callback fails closed |
 | Navigation sort is a base plus each page's own `$navigationSort` | One option moves the whole Headroom block while keeping page order; an icon can be set for all pages or per page |
+| Every page and widget gets its range through `Range::resolve()` | One place for the allowed ranges, their labels and the plugin default; invalid `defaultRange()` strings throw when set, not when a page renders |
 | `HeadroomPlugin::current()` returns null on panels without the plugin | Widgets on host dashboards still get the local-only default instead of throwing |
 | Require Headroom directly, not just via the ledger | The plugin uses Headroom enums such as `CountMethod` |
 | No Docker, FrankenPHP, Makefile or MySQL | Package development only: PHP and Composer in WSL, Testbench on SQLite. Overrides the default stack in `.claude/rules/RULES.md` |

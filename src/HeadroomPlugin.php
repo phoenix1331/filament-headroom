@@ -15,6 +15,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Support\Htmlable;
 use InvalidArgumentException;
 use LogicException;
+use Phoenix1331\FilamentHeadroom\Enums\Range;
 use UnitEnum;
 
 class HeadroomPlugin implements Plugin
@@ -35,6 +36,10 @@ class HeadroomPlugin implements Plugin
     protected array $pageNavigationIcons = [];
 
     protected int|Closure|null $navigationSort = null;
+
+    protected Range|string|Closure $defaultRange = Range::DEFAULT;
+
+    protected ?Closure $tagLabelUsing = null;
 
     public static function make(): static
     {
@@ -183,6 +188,52 @@ class HeadroomPlugin implements Plugin
         throw new InvalidArgumentException('The Headroom navigation sort must resolve to an integer or null, '.get_debug_type($sort).' given.');
     }
 
+    /**
+     * The range pages and widgets open with: '7d', '30d' (the default) or '90d'.
+     */
+    public function defaultRange(Range|string|Closure $range): static
+    {
+        if (is_string($range)) {
+            self::toRange($range);
+        }
+
+        $this->defaultRange = $range;
+
+        return $this;
+    }
+
+    public function getDefaultRange(): Range
+    {
+        return self::toRange($this->evaluate($this->defaultRange));
+    }
+
+    /**
+     * How a ledger tag is shown in filters, columns and the detail view. The
+     * closure can take `$key` and `$value` and must return a string, for
+     * example to show a tenant's name instead of its ID.
+     */
+    public function tagLabel(?Closure $callback): static
+    {
+        $this->tagLabelUsing = $callback;
+
+        return $this;
+    }
+
+    public function getTagLabel(string $key, string $value): string
+    {
+        if ($this->tagLabelUsing === null) {
+            return __('filament-headroom::tags.label', ['key' => $key, 'value' => $value]);
+        }
+
+        $label = $this->evaluate($this->tagLabelUsing, ['key' => $key, 'value' => $value]);
+
+        if (is_string($label)) {
+            return $label;
+        }
+
+        throw new InvalidArgumentException('The Headroom tag label must resolve to a string, '.get_debug_type($label).' given.');
+    }
+
     public function register(Panel $panel): void
     {
         //
@@ -200,6 +251,21 @@ class HeadroomPlugin implements Plugin
     private static function defaultAuthorization(): bool
     {
         return app()->environment('local');
+    }
+
+    private static function toRange(mixed $range): Range
+    {
+        if ($range instanceof Range) {
+            return $range;
+        }
+
+        if (is_string($range) && ($resolved = Range::tryFrom($range)) !== null) {
+            return $resolved;
+        }
+
+        $allowed = implode(', ', array_map(fn (Range $case): string => "'{$case->value}'", Range::cases()));
+
+        throw new InvalidArgumentException('The Headroom default range must be one of '.$allowed.', '.(is_string($range) ? "'{$range}'" : get_debug_type($range)).' given.');
     }
 
     private static function ensureInstance(mixed $plugin): static
