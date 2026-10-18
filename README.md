@@ -2,6 +2,8 @@
 
 A Filament dashboard for AI token usage, cost and context limits, powered by [Headroom](https://github.com/phoenix1331/laravel-ai-headroom).
 
+> **The Headroom family:** [Headroom](https://github.com/phoenix1331/laravel-ai-headroom) counts and guards requests · [Headroom Ledger](https://github.com/phoenix1331/laravel-ai-headroom-ledger) records them · **Headroom for Filament** shows them in a Filament panel (this package)
+
 [![Tests](https://github.com/phoenix1331/filament-headroom/actions/workflows/tests.yml/badge.svg)](https://github.com/phoenix1331/filament-headroom/actions/workflows/tests.yml)
 [![Static analysis](https://github.com/phoenix1331/filament-headroom/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/phoenix1331/filament-headroom/actions/workflows/static-analysis.yml)
 [![Licence](https://img.shields.io/github/license/phoenix1331/filament-headroom)](LICENSE)
