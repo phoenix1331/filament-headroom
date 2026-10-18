@@ -9,3 +9,4 @@ composer.lock
 .claude/
 /.playwright-mcp
 /test-app/
+/.mcp.json
