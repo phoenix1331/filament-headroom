@@ -27,7 +27,8 @@ This is a Composer **package**, not a Laravel app. There is no `app/`, no routes
 | `src/Widgets/StatsOverview.php` | Spend (trend vs previous period, sparkline, single currency only), requests, average/peak context, blocked, warned. No polling |
 | `src/Widgets/SpendOverTime.php` | Line chart per model/provider (filter), top `ChartPalette::slots()` series plus "Other" = daily total minus drawn series; largest currency drawn, others named |
 | `src/Widgets/TokensByAgent.php` | Stacked horizontal bars of reported input/output per agent (top `MAX_AGENTS`, rest folded); unreported requests counted in the description, never drawn |
-| `src/Widgets/ContextHeadroom.php` | Distribution of pre-flight percent used in `EDGES` buckets, each from `nearLimit($edge)->count()` differences (one raw count per edge; ledger L2 would make it one query). Closest-to-limit list can now use `orderBy(EntrySort::PercentUsed)` |
+| `src/Widgets/ContextHeadroom.php` | Distribution of pre-flight percent used in `EDGES` buckets, each from `nearLimit($edge)->count()` differences (one raw count per edge; ledger L2 would make it one query). The closest-to-limit list is its own table widget |
+| `src/Widgets/ClosestToLimit.php` | Top `LIMIT` sent requests by `orderBy(EntrySort::PercentUsed)` (blocked left out, they are in `BlockedWarnedFailed`); rows link to `RequestDetail` only when the panel enables a Requests page |
 | `src/Widgets/EstimateAccuracy.php` | `errorPercent()` per model per `Range::buckets()` point (1, 3 or 7 days) from one `byDay()->accuracy()` query merged per bucket; count method filter; null (gap) where a bucket has no samples |
 | `src/Widgets/BlockedWarnedFailed.php` | Table widget over array records (`key` = request ID) from `withOutcome(...)->entries(LIMIT)` |
 | `src/Support/Outcomes.php` | Outcome label and badge colour; `reason()` turns a `LimitType` value or `ExceptionClass:status` into words |

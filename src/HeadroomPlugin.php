@@ -24,6 +24,7 @@ use Phoenix1331\FilamentHeadroom\Pages\Overview;
 use Phoenix1331\FilamentHeadroom\Pages\RequestDetail;
 use Phoenix1331\FilamentHeadroom\Pages\Requests;
 use Phoenix1331\FilamentHeadroom\Widgets\BlockedWarnedFailed;
+use Phoenix1331\FilamentHeadroom\Widgets\ClosestToLimit;
 use Phoenix1331\FilamentHeadroom\Widgets\ContextHeadroom;
 use Phoenix1331\FilamentHeadroom\Widgets\EstimateAccuracy;
 use Phoenix1331\FilamentHeadroom\Widgets\SpendOverTime;
@@ -58,6 +59,7 @@ class HeadroomPlugin implements Plugin
         SpendOverTime::class,
         TokensByAgent::class,
         ContextHeadroom::class,
+        ClosestToLimit::class,
         EstimateAccuracy::class,
         BlockedWarnedFailed::class,
     ];

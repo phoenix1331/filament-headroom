@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Spend over time widget: daily spend per model or provider, the top six as their own lines and the rest as "Other", in one currency (others named, never converted), marked when it includes estimates. Colours are validated for colour vision deficiency in light and dark mode.
 - Tokens by agent widget: reported input and output tokens per agent as stacked bars, busiest first, with requests that never reported usage counted in the description instead of drawn.
 - Context headroom widget: how much of the context window requests used, from pre-flight counts, in buckets up to 100%+ (did not fit), with the number at 90% or more called out.
+- Closest to the limit widget: the five requests in the range that used the most of their context window and were still sent, linking to their detail pages.
 - Estimate accuracy widget: weighted error between Headroom's estimates and reported input tokens per model over time, filterable by count method, with gaps where no requests reported usage.
 - Blocked, warned and failed widget: the latest ten such requests in the range with outcome badges and readable reasons (limit type, or exception and HTTP status).
 - Every widget works on an app's own Filament dashboards, following the plugin's authorisation and enabled widgets, or the local-only default on panels without the plugin. `RangeSelect::make()` adds the range picker to any dashboard's filters form.

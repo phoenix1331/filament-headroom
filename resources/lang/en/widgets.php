@@ -57,6 +57,17 @@ return [
         'samples' => 'samples',
     ],
 
+    'closest_to_limit' => [
+        'heading' => 'Closest to the limit',
+        'description' => 'The :count requests in this range that used the most of their context window and were still sent, from pre-flight counts.',
+        'empty' => 'No counted requests in this range',
+        'of_window' => ':tokens of :window tokens',
+        'columns' => [
+            'context' => 'Context used',
+            'tokens' => 'Estimate',
+        ],
+    ],
+
     'blocked_warned_failed' => [
         'heading' => 'Blocked, warned and failed',
         'description' => 'The latest :count requests in this range that hit a limit or failed.',
