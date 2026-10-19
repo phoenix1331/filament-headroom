@@ -8,6 +8,7 @@ A Filament dashboard for AI token usage, cost and context limits, powered by [He
 [![Static analysis](https://github.com/phoenix1331/filament-headroom/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/phoenix1331/filament-headroom/actions/workflows/static-analysis.yml)
 [![Packagist](https://img.shields.io/packagist/v/phoenix1331/filament-headroom.svg)](https://packagist.org/packages/phoenix1331/filament-headroom)
 [![Licence](https://img.shields.io/github/license/phoenix1331/filament-headroom.svg)](LICENSE)
+[![Filament plugin](https://img.shields.io/badge/filament-plugin-f59e0b.svg)](https://filamentphp.com/plugins/phoenix1331-headroom)
 
 <img width="100%" src="https://github.com/user-attachments/assets/0d1fe034-5951-4580-a3ee-574c3650c224" alt="The top of the Headroom Overview page in a Filament panel: a range picker, spend with an Includes estimates badge and its trend against the previous period, and request, context, blocked and warned counts" />
 
@@ -16,7 +17,7 @@ Full Overview page: [light](https://raw.githubusercontent.com/phoenix1331/filame
 
 Spend and its trend, tokens by agent, how close requests came to their context window, how accurate the estimates were, and every request and agent run, inside the Filament panel your team already uses. It reads the [Headroom Ledger](https://github.com/phoenix1331/laravel-ai-headroom-ledger), stores nothing itself, and never shows an estimate as billed cost.
 
-**Site:** <https://phoenix1331.github.io/filament-headroom>
+**Site:** <https://phoenix1331.github.io/filament-headroom> · **Filament plugin directory:** <https://filamentphp.com/plugins/phoenix1331-headroom>
 
 ## What this demonstrates
 
