@@ -9,10 +9,8 @@ A Filament dashboard for AI token usage, cost and context limits, powered by [He
 [![Packagist](https://img.shields.io/packagist/v/phoenix1331/filament-headroom.svg)](https://packagist.org/packages/phoenix1331/filament-headroom)
 [![Licence](https://img.shields.io/github/license/phoenix1331/filament-headroom.svg)](LICENSE)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-top-dark.png">
-  <img src="https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-top-light.png" alt="The top of the Headroom Overview page in a Filament panel: a range picker, spend with an Includes estimates badge and its trend against the previous period, and request, context, blocked and warned counts">
-</picture>
+<img width="2560" height="1440" alt="headroom-filament" src="https://github.com/user-attachments/assets/0d1fe034-5951-4580-a3ee-574c3650c224" alt="The top of the Headroom Overview page in a Filament panel: a range picker, spend with an Includes estimates badge and its trend against the previous period, and request, context, blocked and warned counts" />
+
 
 Full Overview page: [light](https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-light.png) | [dark](https://raw.githubusercontent.com/phoenix1331/filament-headroom/main/docs/screenshots/overview-dark.png). Every page and widget is in [`docs/screenshots`](https://github.com/phoenix1331/filament-headroom/tree/main/docs/screenshots).
 
